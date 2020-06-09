@@ -1,0 +1,23 @@
+{
+  "name": "nightmare-crawler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/overarchingSky/nightmare-crawler.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/overarchingSky/nightmare-crawler/issues"
+  },
+  "homepage": "https://github.com/overarchingSky/nightmare-crawler#readme",
+  "dependencies": {
+    "crawler": "^1.2.2",
+    "nightmare": "^3.0.2"
+  }
+}
