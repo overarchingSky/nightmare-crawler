@@ -9,6 +9,7 @@ var p = new Promise((resolve,reject) => {
 
 var c = new Crawler({
     rateLimit:500,
+    proxy:'http://localhost:1080',
     preRequest(options, done){
         // 在发送请求之前做些事情
         // 这里发起登录流程，以获取cookie
@@ -31,6 +32,7 @@ function start(buildUrl,pageCount,cb){
         url = buildUrl(page)
         c.queue({uri:url,callback(err, res, done){
                 $ = res.$
+                console.log(res)
                 const data = [{name:'test', url:url}]
                 done();
                 cb(data, pageCount === 0)
