@@ -3,8 +3,10 @@ const getProd = require('./task/get-prod')
 const path = require('path')
 require('./menu')
 
+
 function createWindow() {
-    // 创建浏览器窗口
+    require('./auth/login')
+        // 创建浏览器窗口
     const win = new BrowserWindow({
         width: 1000,
         height: 600,
