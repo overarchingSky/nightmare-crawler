@@ -1,21 +1,26 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
+const recoveyCookies = require('./auth/recovey-cookies')
 const getProd = require('./task/get-prod')
 const path = require('path')
 require('./menu')
 
 
 function createWindow() {
-    require('./auth/login')
-        // 创建浏览器窗口
-    const win = new BrowserWindow({
-        width: 1000,
-        height: 600,
-        webPreferences: {
-            nodeIntegration: true
-        }
-    })
+    // 引入登陆模块，如果未登录，将会打开新窗口并访问登陆页
+    const cookies = require('./auth/login')
 
-    // 并且为你的应用加载index.html
+    // 创建浏览器窗口
+    const win = new BrowserWindow({
+            width: 1000,
+            height: 600,
+            webPreferences: {
+                nodeIntegration: true
+            }
+        })
+        // 恢复cookies现场
+    recoveyCookies(win, cookies)
+
+    // 加载应用程序主页
     win.loadFile(path.resolve(__dirname, '../dist/index.html'))
 
     // 打开开发者工具
