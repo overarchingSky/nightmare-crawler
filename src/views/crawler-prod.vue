@@ -6,7 +6,7 @@
       </md-app-toolbar> -->
       <md-app-content>
         <!-- prod table -->
-        <md-table v-model="list" md-sort="name" md-sort-order="asc" md-fixed-header>
+        <md-table class="table" v-model="list" md-sort="name" md-sort-order="asc" md-fixed-header>
           <!-- <md-table-toolbar>
             <div class="md-toolbar-section-start">
               <h1 class="md-title">Users</h1>
@@ -24,11 +24,13 @@
           </md-table-empty-state>
 
           <md-table-row slot="md-table-row" slot-scope="{ item }">
-            <md-table-cell md-label="ID" md-sort-by="id" md-numeric>{{ item.id }}</md-table-cell>
-            <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
-            <md-table-cell md-label="Email" md-sort-by="email">{{ item.email }}</md-table-cell>
-            <md-table-cell md-label="Gender" md-sort-by="gender">{{ item.gender }}</md-table-cell>
-            <md-table-cell md-label="Job Title" md-sort-by="title">{{ item.title }}</md-table-cell>
+            <!-- <md-table-cell md-label="ID" md-sort-by="id" md-numeric>{{ item.id }}</md-table-cell> -->
+            <md-table-cell md-label="name" md-sort-by="name">{{ item.name }}</md-table-cell>
+            <md-table-cell md-label="picture" md-sort-by="img">
+              <img :src="item.img" alt="" srcset="">
+            </md-table-cell>
+            <md-table-cell md-label="url" md-sort-by="url">{{ item.url }}</md-table-cell>
+            <md-table-cell md-label="desc" md-sort-by="desc">{{ item.desc }}</md-table-cell>
           </md-table-row>
         </md-table>
       </md-app-content>
@@ -61,8 +63,9 @@ export default {
       this.loading = true
       ipcRenderer.send('get-prod',{})
     },
-    fullData(data){
-      this.list.push(data)
+    fullData(e,data){
+      this.list.push(...data)
+      console.log(this.list)
     },
     endLoad(){
       this.loading = false
@@ -74,16 +77,22 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
   .md-app {
     height:100%;
     //max-height: 400px;
     border: 1px solid rgba(#000, .12);
   }
-
+  .table,
+  .md-table-content{
+    width:100%
+  }
    // Demo purposes only
   .md-drawer {
     width: 250px;
     //max-width: calc(100vw - 125px);
+  }
+  .md-table-cell-container{
+    padding:6px 22px 6px 14px;
   }
 </style>

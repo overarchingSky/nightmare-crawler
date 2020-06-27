@@ -1,12 +1,15 @@
-const { session, BrowserWindow } = require('electron')
+const { session, BrowserWindow, ipcMain } = require('electron')
 const store = new(require('electron-store'))
-const sessionCookieStoreKey = 'cookies.firl.jp'
+const { cookiesKey } = require('../const')
+const path = require('path')
+console.log('key', cookiesKey)
     // 获取到默认session，并查看其中是否存在cookie，或者cookie是否有效
     // const defaultSession = session.defaultSession
     // const cookies = defaultSession.cookies
     // const isEffect = Object.keys(cookies).length > 0
-let cookies = store.get(sessionCookieStoreKey) || [];
+let cookies = store.get(cookiesKey) || [];
 const isEffect = false //cookies.length > 0
+let isCookiesChanged = false;
 console.log('cookies', Object.keys(cookies))
 if (!isEffect) {
     // to login
@@ -14,14 +17,16 @@ if (!isEffect) {
 }
 
 function startLogin() {
-    // 创建浏览器窗口
+    let timer
+        // 创建浏览器窗口
     const win = new BrowserWindow({
-        width: 1000,
+        width: 1600,
         height: 600,
         // 这个会导致某些接口容易调用失败
-        // webPreferences: {
-        //     nodeIntegration: true
-        // }
+        webPreferences: {
+            preload: path.resolve(__dirname, './test.js')
+                //nodeIntegration: true
+        }
     })
 
     // 并且为你的应用加载index.html
@@ -30,25 +35,37 @@ function startLogin() {
         // 打开开发者工具
     win.webContents.openDevTools()
     const cookies = win.webContents.session.cookies
-    cookies.on('changed', (...e) => {
-        // console.log('cookies changed')
-        // console.log('fril.jp', e)
+        // cookies.on('changed', handleCookieChange)
 
-        // 保存cookies
-        let isCookiesChanged = false;
-        win.webContents.session.cookies.on('changed', () => {
-            //检测cookies变动事件，标记cookies发生变化
-            isCookiesChanged = true;
-        });
+    function handleCookieChange(...e) {
+        // win.webContents.session.cookies.get({})
+        //     .then((cookies) => {
+        //         store.set(cookiesKey, cookies);
+        //     })
+        //     .catch((error) => {
+        //         console.log({ error })
+        //     })
+        //     .finally(() => {
+        //         isCookiesChanged = false;
+        //     })
+        // return
+        //检测cookies变动事件，标记cookies发生变化
+        isCookiesChanged = true;
 
         //每隔500毫秒检查是否有cookie变动，有变动则进行持久化
-        setInterval(() => {
+        timer = setInterval(() => {
+            if (!win || !win.webContents) {
+                clearInterval(timer)
+                return
+            }
             if (!isCookiesChanged) {
                 return;
             }
+
+            console.log('timer', timer)
             win.webContents.session.cookies.get({})
                 .then((cookies) => {
-                    store.set(sessionCookieStoreKey, cookies);
+                    store.set(cookiesKey, cookies);
                 })
                 .catch((error) => {
                     console.log({ error })
@@ -57,14 +74,21 @@ function startLogin() {
                     isCookiesChanged = false;
                 })
         }, 500);
-    })
-    win.on("page-title-updated", () => {
-        // 检查是否登陆
-        console.log('webContents', win.webContents)
-        win.webContents.executeJavaScript(`console.log('哈哈！');`)
-            // https://fril.jp/mypage
+    }
+    // win.on("page-title-updated", () => {
+    //     // 检查是否登陆
+    //     //cookies.removeListener('changed', handleCookieChange)
+    //     win.webContents.executeJavaScript(`
+    //         window.ipcRenderer.send('login-success')
+    //     `)
+    // })
+    ipcMain.on('login-success', () => {
+
+        setTimeout(() => {
+            //win.destroy()
+        }, 0);
     })
 }
 
 
-module.exports = cookie;
+module.exports = cookies;

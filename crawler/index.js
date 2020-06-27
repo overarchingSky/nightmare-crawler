@@ -1,16 +1,24 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
+const store = new(require('electron-store'))
+const { cookiesKey } = require('./const')
 const recoveyCookies = require('./auth/recovey-cookies')
 const getProd = require('./task/get-prod')
 const path = require('path')
+const child_process = require('child_process');
+const fs = require('fs')
 require('./menu')
 
+console.log('-----', app.getPath('userData'))
+
+//应用程序主界面
+let win
 
 function createWindow() {
     // 引入登陆模块，如果未登录，将会打开新窗口并访问登陆页
     const cookies = require('./auth/login')
 
     // 创建浏览器窗口
-    const win = new BrowserWindow({
+    win = new BrowserWindow({
             width: 1000,
             height: 600,
             webPreferences: {
@@ -51,13 +59,37 @@ app.on('activate', () => {
 // 您可以把应用程序其他的流程写在在此文件中
 
 ipcMain.on('get-prod', (event, options) => {
-    pageCount = 1
-    getProd((page) => {
-        return 'https://fril.jp/category/668/page/' + page
-    }, pageCount, (data, finished) => {
-        event.reply('revice-prod', data)
-        if (finished) {
-            event.reply('revice-prod-end')
-        }
-    })
+    let cookies = store.get(cookiesKey) || [];
+    child_process.exec('scrapy crawl fril', {
+            cwd: path.resolve(__dirname, './python-task')
+        }, (err, response, ss) => {
+            console.log('++++++++++++++')
+                // console.log(response)
+                // if (Array.isArray(response)) {
+                //     event.reply('revice-prod', response)
+                // }
+            let f = fs.readFile(path.resolve(__dirname, "./python-task/data-sheet/prod.json"), "utf-8", function(err, data) {
+                console.log(data)
+                event.reply('revice-prod', JSON.parse(data))
+            })
+        })
+        // pageCount = 1
+        // const shapUrl = 'https://fril.jp/category/668' //store.get('shopUrl')
+        // getProd((page) => {
+        //     return `${shapUrl}/page/${page}`
+        // }, pageCount, (data, finished) => {
+        //     event.reply('revice-prod', data)
+        //     if (finished) {
+        //         event.reply('revice-prod-end')
+        //     }
+        // })
+})
+
+ipcMain.on('login-success', (e, shopUrl) => {
+    console.log('login success', shopUrl)
+    store.set('shopUrl', shopUrl)
+        //登陆成功，执行注入cookies逻辑
+    let cookies = store.get(cookiesKey) || [];
+    // 恢复cookies现场
+    //recoveyCookies(win, cookies)
 })
