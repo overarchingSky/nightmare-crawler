@@ -8,6 +8,12 @@ class FrilSpider(scrapy.Spider):
     # start_urls = ['http://fril.jp/']
     start_urls = ['https://fril.jp/category/668?min=300&max=300000']
 
+    def __init__(self,cookies=None,*args, **kwargs):
+        print('cookies spider')
+        print(cookies)
+        self.cookies = cookies
+        super(FrilSpider, self).__init__(*args, **kwargs)
+
     def parse(self, response):
         prods = response.xpath("//div[@class='content']/section[@class='view view_grid']/div[@class='item']")
         for prodSelector in prods:

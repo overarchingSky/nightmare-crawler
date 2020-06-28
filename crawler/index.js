@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, dialog, BrowserWindow, ipcMain } = require('electron')
 const store = new(require('electron-store'))
 const { cookiesKey } = require('./const')
 const recoveyCookies = require('./auth/recovey-cookies')
@@ -60,7 +60,7 @@ app.on('activate', () => {
 
 ipcMain.on('get-prod', (event, options) => {
     let cookies = store.get(cookiesKey) || [];
-    child_process.exec('scrapy crawl fril', {
+    child_process.exec(`scrapy crawl fril -a cookies=${JSON.stringify(cookies)}`, {
             cwd: path.resolve(__dirname, './python-task')
         }, (err, response, ss) => {
             console.log('++++++++++++++')
@@ -83,6 +83,21 @@ ipcMain.on('get-prod', (event, options) => {
         //         event.reply('revice-prod-end')
         //     }
         // })
+})
+
+ipcMain.on('view-doc',() => {
+    console.log('path',path.resolve(__dirname,'python-task/data-sheet'))
+    dialog.showOpenDialog({
+        //title:'test'
+        defaultPath:path.resolve(__dirname,'python-task/data-sheet'),
+        properties:['openFile'],
+        filters:[
+            { name: 'All Files', extensions: ['csv','json'] }
+        ]
+    }).then(file => {
+        console.log('选择文件：')
+        console.log(file)
+    })
 })
 
 ipcMain.on('login-success', (e, shopUrl) => {

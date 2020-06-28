@@ -27,7 +27,7 @@
             <!-- <md-table-cell md-label="ID" md-sort-by="id" md-numeric>{{ item.id }}</md-table-cell> -->
             <md-table-cell md-label="name" md-sort-by="name">{{ item.name }}</md-table-cell>
             <md-table-cell md-label="picture" md-sort-by="img">
-              <img :src="item.img" alt="" srcset="">
+              <img :src="item.img" alt="" style="min-width:100px;height:100px;" srcset="">
             </md-table-cell>
             <md-table-cell md-label="url" md-sort-by="url">{{ item.url }}</md-table-cell>
             <md-table-cell md-label="desc" md-sort-by="desc">{{ item.desc }}</md-table-cell>
@@ -38,8 +38,10 @@
       <md-app-drawer md-permanent="full" :md-right="true">
         <md-list>
           <md-list-item>
-            <!-- <md-icon>move_to_inbox</md-icon> -->
             <span class="md-list-item-text" @click="getProd">开始爬取</span>
+          </md-list-item>
+          <md-list-item>
+            <span class="md-list-item-text" @click="viewDoc">查看文件</span>
           </md-list-item>
         </md-list>
       </md-app-drawer>
@@ -62,6 +64,10 @@ export default {
       console.log('爬取中...')
       this.loading = true
       ipcRenderer.send('get-prod',{})
+    },
+    viewDoc(){
+      console.log('查看文件...')
+      ipcRenderer.send('view-doc')
     },
     fullData(e,data){
       this.list.push(...data)

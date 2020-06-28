@@ -20,6 +20,7 @@ class CSVFrilJpPipeline:
         self.exporter.start_exporting()
 
     def open_spider(self, spider):
+        print(spider.cookies)
         print('商品爬虫开始了...')
 
     def process_item(self, item, spider):
