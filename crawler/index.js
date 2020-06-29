@@ -29,8 +29,9 @@ function createWindow() {
     recoveyCookies(win, cookies)
 
     // 加载应用程序主页
-    win.loadFile(path.resolve(__dirname, '../dist/index.html'))
-
+    console.log('env',process.env.NODE_ENV)
+    process.env.NODE_ENV === 'production' ? win.loadFile(path.resolve(__dirname, '../dist/index.html')) : win.loadURL('http://192.168.142.20:8991')
+    
     // 打开开发者工具
     win.webContents.openDevTools()
 }

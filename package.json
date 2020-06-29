@@ -30,15 +30,14 @@
       ]
     }
   },
-  "main": "crawler/index.js",
   "scripts": {
-    "start": "electron crawler/index.js",
+    "start": "cross-env NODE_ENV=dev electron crawler/index.js",
     "dev": "npm run serve && node crawler/index.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "dist2": "electron-packager ./ myapp --out ./OutApp --version 1.7.9 --overwrite --icon=./app/img/icon/icon.ico",
-    "dist": "electron-builder --win --x64"
+    "dist": "cross-env NODE_ENV=production electron-builder --win --x64"
   },
   "dependencies": {
     "core-js": "^3.6.5",
@@ -60,6 +59,7 @@
     "@vue/eslint-config-standard": "^5.1.2",
     "ansi-regex": "^5.0.0",
     "babel-eslint": "^10.1.0",
+    "cross-env": "^7.0.2",
     "electron": "^9.0.4",
     "electron-builder": "^22.7.0",
     "electron-store": "^5.2.0",

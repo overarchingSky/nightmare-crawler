@@ -27,7 +27,7 @@
       </md-list-item>
     </md-list>
     <md-button class="md-primary md-raised" @click="openPanel">Create task</md-button>
-      <md-dialog :md-active.sync="showCreateTaskPanel" style="width:350px;">
+      <md-dialog :md-active.sync="showCreateTaskPanel">
         <md-dialog-title>create task</md-dialog-title>
         <create-release-task-form ref="form"></create-release-task-form>        
         <md-dialog-actions>
@@ -71,3 +71,9 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.md-dialog-container{
+    width:650px;
+}
+  
+</style>
