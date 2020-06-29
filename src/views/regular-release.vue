@@ -31,8 +31,8 @@
         <md-dialog-title>create task</md-dialog-title>
         <create-release-task-form ref="form"></create-release-task-form>        
         <md-dialog-actions>
-          <md-button class="md-primary" @click="showCreateTaskPanel = false">Close</md-button>
-          <md-button class="md-primary" @click="createTask">Save</md-button>
+          <md-button class="md-primary" @click="showCreateTaskPanel = false">取消</md-button>
+          <md-button class="md-primary" @click="createTask">保存</md-button>
         </md-dialog-actions>
       </md-dialog>
   </div>

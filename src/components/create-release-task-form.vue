@@ -19,14 +19,18 @@
         <md-radio v-model="form.type" value="type1">弹性间隔
           <p>设置一个弹性时间间隔，每次发布时间，由间隔内的随机值确定</p>
         </md-radio>
+        <validation-observer v-slot="{ invalid }">
         <form class="from md-primary" v-show="form.type === 'type1'" style="wdith:370px;display:flex;flex-direction:row;align-items:center;">
             <md-field>
               <label for="first-name">最小时间间隔</label>
-              <md-input
-                name="task-name"
-                id="task-name"
-                v-model="form.taskName"
-              />
+              <validation-provider rules="required|digits" v-slot="{ errors }">
+                  <md-input
+                    name="task-name"
+                    id="task-name"
+                    v-model="form.taskName"
+                  />
+                  <span class="md-error" v-if="errors[0]">{{errors[0]}</span>
+              </validation-provider>
             </md-field>
             <span style="margin:0 20px">—</span> 
             <md-field>
@@ -38,10 +42,11 @@
               />
             </md-field>
           </form>
-        <md-radio v-model="form.type" value="type2" class="md-primary">固定间隔</md-radio>
+          <md-radio v-model="form.type" value="type2" class="md-primary">固定间隔</md-radio>
         <md-radio v-model="form.type" value="type3" class="md-primary">定点执行</md-radio>
+        <md-button class="md-raised md-primary" @click="setDone(1,'third')" >下一步</md-button>
+        </validation-observer>
         
-        <md-button class="md-raised md-primary" @click="setDone(1,'third')">Continue</md-button>
       </md-step>
 
       <md-step id="third" md-label="完成" :md-done.sync="steps[2]">
@@ -85,7 +90,6 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-
 export default {
   name: "create-release-task-form",
   data() {
@@ -107,7 +111,6 @@ export default {
   },
   methods: {
     setDone (step, index) {
-      console.log('++++',step,index)
         this.steps[step] = true
         if(step === this.steps.length - 2){
           this.steps[this.steps.length - 1] = true
