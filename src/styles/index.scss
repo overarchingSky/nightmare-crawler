@@ -1,0 +1,14 @@
+.md-has-textarea{
+    span{
+        display:block;
+        width:100%;
+        .md-textarea{
+            width:100%;
+        }
+    }
+}
+
+.md-errors{
+    position:absolute;
+    top:50px;
+}

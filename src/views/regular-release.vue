@@ -29,11 +29,13 @@
     <md-button class="md-primary md-raised" @click="openPanel">Create task</md-button>
       <md-dialog :md-active.sync="showCreateTaskPanel">
         <md-dialog-title>create task</md-dialog-title>
-        <create-release-task-form ref="form"></create-release-task-form>        
-        <md-dialog-actions>
-          <md-button class="md-primary" @click="showCreateTaskPanel = false">取消</md-button>
-          <md-button class="md-primary" @click="createTask">保存</md-button>
-        </md-dialog-actions>
+        <create-release-task-form ref="form">
+          <md-dialog-actions slot="action">
+            <md-button class="md-primary" @click="showCreateTaskPanel = false">取消</md-button>
+            <md-button class="md-primary" @click="createTask">保存</md-button>
+          </md-dialog-actions>  
+        </create-release-task-form>        
+        
       </md-dialog>
   </div>
 </template>

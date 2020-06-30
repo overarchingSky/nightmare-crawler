@@ -1,52 +1,61 @@
 <template>
   <div class="create-release-task-form md-scrollbar">
     <md-steppers :md-active-step.sync="active" md-alternative md-vertical md-linear>
+
       <md-step id="first" md-label="任务名称" :md-done.sync="steps[0]">
-        <p>请为该任务指定一个名称</p>
-        <md-field>
-          <md-input
-            name="task-name"
-            id="task-name"
-            v-model="form.taskName"
-          />
-        </md-field>
-        
-        <md-button class="md-raised md-primary" @click="setDone(0,'second')">下一步</md-button>
+        <!-- <p>请为该任务指定一个名称</p> -->
+        <validation-observer name="taskName" v-slot="{ invalid }">
+          <md-field>
+            <validation-provider rules="required">
+              <md-textarea v-model="form.taskName" placeholder="为任务取一个名字吧" md-autogrow></md-textarea>
+            </validation-provider>
+          </md-field>
+          <md-button class="next md-raised md-primary" :disabled="invalid" @click="setDone(0,'second')">下一步</md-button>
+        </validation-observer>
       </md-step>
 
       <md-step id="second" md-label="发布频率" :md-done.sync="steps[1]">
-        
-        <md-radio v-model="form.type" value="type1">弹性间隔
-          <p>设置一个弹性时间间隔，每次发布时间，由间隔内的随机值确定</p>
-        </md-radio>
         <validation-observer v-slot="{ invalid }">
-        <form class="from md-primary" v-show="form.type === 'type1'" style="wdith:370px;display:flex;flex-direction:row;align-items:center;">
-            <md-field>
-              <label for="first-name">最小时间间隔</label>
-              <validation-provider rules="required|digits" v-slot="{ errors }">
-                  <md-input
-                    name="task-name"
-                    id="task-name"
-                    v-model="form.taskName"
-                  />
-                  <span class="md-error" v-if="errors[0]">{{errors[0]}</span>
+          <validation-provider rules="required">
+            <md-radio v-model="form.type" value="type1" class="md-primary">弹性间隔
+              <p>设置一个弹性时间间隔，每次发布时间，由间隔内的随机值确定</p>
+            </md-radio>
+          </validation-provider>
+          <form class="form md-primary" v-if="form.type === 'type1'">
+              <md-field>
+                <label for="first-name">最小时间间隔</label>
+                <validation-provider :rules="`required|max_value:${form.intervalSection[1]-1}`">
+                    <md-input
+                      type="number"
+                      v-model.number="form.intervalSection[0]"
+                    />
+                </validation-provider>
+              </md-field>
+              <span style="margin:0 20px">—</span> 
+                <validation-provider name="max" :rules="`required|min_value:${form.intervalSection[0]+1}`" v-slot="{ errors  }">
+                  <md-field>
+                    <label>最大时间间隔</label>
+                    <md-input type="number" v-model="form.intervalSection[1]"/>
+                    <span class="md-errors" v-if="errors[0]">{{errors[0]}}</span>
+                  </md-field>
+                </validation-provider>
+              <div style="min-width:3em;margin-left:20px;">分钟</div>
+            </form>
+            <md-radio v-model="form.type" value="type2" class="md-primary">
+              固定间隔
+              <p>每隔{{form.interval || 'N'}}分钟执行一次发布任务</p>
+              <validation-provider tag="div" v-if="form.type === 'type2'" name="interval" rules="required|min_value:1" v-slot="{ errors  }" @click.stop style="display:flex;flex-direction:row;align-items:center;">
+                <md-field>
+                  <label>设置间隔时间</label>
+                  <md-input type="number" v-model="form.interval"/>
+                  <span class="md-errors" v-if="errors[0]">{{errors[0]}}</span>
+                </md-field>
+                <span style="margin-left:20px;">分钟</span>
               </validation-provider>
-            </md-field>
-            <span style="margin:0 20px">—</span> 
-            <md-field>
-              <label for="first-name">最大时间间隔</label>
-              <md-input
-                name="task-name"
-                id="task-name"
-                v-model="form.taskName"
-              />
-            </md-field>
-          </form>
-          <md-radio v-model="form.type" value="type2" class="md-primary">固定间隔</md-radio>
-        <md-radio v-model="form.type" value="type3" class="md-primary">定点执行</md-radio>
-        <md-button class="md-raised md-primary" @click="setDone(1,'third')" >下一步</md-button>
+                
+            </md-radio>
+          <md-button class="next md-raised md-primary" :disabled="invalid"  @click="setDone(1,'third')" >下一步</md-button>
         </validation-observer>
-        
       </md-step>
 
       <md-step id="third" md-label="完成" :md-done.sync="steps[2]">
@@ -54,42 +63,16 @@
           md-label="恭喜您，已完成配置！"
           md-description="快点击下方保存按钮保存吧">
         </md-empty-state>
+        <slot name="action"/>
       </md-step>
       
     </md-steppers>
-    <!-- <form novalidate class="md-layout md-gutter">
-      <md-field class="firstName">
-        <label for="first-name">task name</label>
-        <md-input
-          name="first-name"
-          id="first-name"
-          autocomplete="given-name"
-          v-model="form.firstName"
-        />
-      </md-field>
-      <md-field class="gender">
-        <label for="gender">频次</label>
-        <md-select name="gender" id="gender" v-model="form.gender" md-dense>
-          <md-option></md-option>
-          <md-option value="M">M</md-option>
-          <md-option value="F">F</md-option>
-        </md-select>
-      </md-field>
-      <md-field class="age">
-        <label for="age">Age</label>
-        <md-input type="number" id="age" name="age" autocomplete="age" v-model="form.age" />
-      </md-field>
-      <md-field class="email">
-        <label for="email">Email</label>
-        <md-input type="email" name="email" id="email" autocomplete="email" v-model="form.email" />
-      </md-field>
-    </form> -->
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
+// import HelloWorld form '@/components/HelloWorld.vue'
 export default {
   name: "create-release-task-form",
   data() {
@@ -100,26 +83,24 @@ export default {
       // second: false,
       // third: false,
       form: {
-        type:'',
-        firstName: null,
-        lastName: null,
-        gender: null,
-        age: null,
-        email: null
+        taskName:'',
+        intervalSection:[],
+        interval:'',
+        type:''
       }
     };
   },
   methods: {
     setDone (step, index) {
-        this.steps[step] = true
-        if(step === this.steps.length - 2){
-          this.steps[this.steps.length - 1] = true
-        }
-        //this.secondStepError = null
+          this.steps[step] = true
+          if(step === this.steps.length - 2){
+            this.steps[this.steps.length - 1] = true
+          }
 
-        if (index) {
-          this.active = index
-        }
+          if (index) {
+            this.active = index
+          }
+        
       },
   }
 };
@@ -130,14 +111,20 @@ export default {
   .md-radio-label{
     height:auto;
   }
-  .from{
+  .form{
+    display:flex;
+    flex-direction:row;
     padding:0 38px;
+    align-items:center;
   }
   .md-field{
     flex:1;
   }
   .md-radio{
     display:flex;
+  }
+  .next{
+    margin:0;
   }
 }
 </style>
