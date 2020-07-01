@@ -42,6 +42,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "crawler": "^1.2.2",
+    "material-design-icons": "^3.0.1",
     "register-service-worker": "^1.7.1",
     "socks5-https-client": "^1.2.1",
     "vee-validate": "^3.3.6",

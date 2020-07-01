@@ -15,7 +15,7 @@ let win
 
 function createWindow() {
     // 引入登陆模块，如果未登录，将会打开新窗口并访问登陆页
-    const cookies = require('./auth/login')
+    //const cookies = require('./auth/login')
 
     // 创建浏览器窗口
     win = new BrowserWindow({
@@ -26,7 +26,7 @@ function createWindow() {
             }
         })
         // 恢复cookies现场
-    recoveyCookies(win, cookies)
+    //recoveyCookies(win, cookies)
 
     // 加载应用程序主页
     console.log('env',process.env.NODE_ENV)

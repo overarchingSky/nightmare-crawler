@@ -15,16 +15,20 @@
       </md-step>
 
       <md-step id="second" md-label="发布频率" :md-done.sync="steps[1]">
+        <i>发布频率尽量控制在一个合适的范围，一般推荐60分钟以上</i>
+        </br>
+        <i>发布频率过快会增加被官方识别出来的概率!</i>
         <validation-observer v-slot="{ invalid }">
           <validation-provider rules="required">
-            <md-radio v-model="form.type" value="type1" class="md-primary">弹性间隔
+            <md-radio v-model="form.type" :value="taskType['弹性间隔']" class="md-primary">弹性间隔（推荐）
               <p>设置一个弹性时间间隔，每次发布时间，由间隔内的随机值确定</p>
+              <p v-if="form.intervalSection[0] && form.intervalSection[1]">当前每隔{{form.intervalSection[0] || 'N'}}~{{form.intervalSection[1] || 'N'}}分钟执行一次发布任务</p>
             </md-radio>
           </validation-provider>
-          <form class="form md-primary" v-if="form.type === 'type1'">
+          <form class="form md-primary" v-if="form.type === taskType['弹性间隔']">
               <md-field>
                 <label for="first-name">最小时间间隔</label>
-                <validation-provider :rules="`required|max_value:${form.intervalSection[1]-1}`">
+                <validation-provider :rules="`required|max_value:${form.intervalSection[1]-1}|min_value:1`">
                     <md-input
                       type="number"
                       v-model.number="form.intervalSection[0]"
@@ -41,10 +45,10 @@
                 </validation-provider>
               <div style="min-width:3em;margin-left:20px;">分钟</div>
             </form>
-            <md-radio v-model="form.type" value="type2" class="md-primary">
+            <md-radio v-model="form.type" :value="taskType['固定间隔']" class="md-primary">
               固定间隔
               <p>每隔{{form.interval || 'N'}}分钟执行一次发布任务</p>
-              <validation-provider tag="div" v-if="form.type === 'type2'" name="interval" rules="required|min_value:1" v-slot="{ errors  }" @click.stop style="display:flex;flex-direction:row;align-items:center;">
+              <validation-provider tag="div" v-if="form.type === taskType['固定间隔']" name="interval" rules="required|min_value:1" v-slot="{ errors  }" @click.stop style="display:flex;flex-direction:row;align-items:center;">
                 <md-field>
                   <label>设置间隔时间</label>
                   <md-input type="number" v-model="form.interval"/>
@@ -65,7 +69,6 @@
         </md-empty-state>
         <slot name="action"/>
       </md-step>
-      
     </md-steppers>
   </div>
 </template>
@@ -73,15 +76,14 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld form '@/components/HelloWorld.vue'
+import { taskType } from '@enums/task-type'
 export default {
   name: "create-release-task-form",
   data() {
     return {
       active: 'first',
+      taskType,
       steps:[false,false,false],
-      // first: false,
-      // second: false,
-      // third: false,
       form: {
         taskName:'',
         intervalSection:[],
