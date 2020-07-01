@@ -34,7 +34,7 @@
             <md-icon>close</md-icon>
           </md-button>
         </md-dialog-title>
-        <create-release-task-form :showCreateTaskPanel.sync="showCreateTaskPanel" ref="form" @on-add-task="load">
+        <create-release-task-form ref="form" @on-add-task="load">
           <!-- <md-dialog-actions slot="action">
             <md-button class="md-primary" @click="showCreateTaskPanel = false">取消</md-button>
             <md-button class="md-primary" @click="createTask">保存</md-button>
@@ -81,7 +81,8 @@ export default {
     }
   },
   created(){
-    ipcRenderer.on('saved-task',(tasks) => {
+    ipcRenderer.on('saved-task',(e, tasks) => {
+      console.log('tasks',tasks)
       // 关闭dialog
       this.showCreateTaskPanel = false
       // 刷新任务列表

@@ -111,6 +111,10 @@ ipcMain.on('login-success', (e, shopUrl) => {
 })
 
 ipcMain.on('save-task', (event, task) => {
-    store.set('task', task)
-    event.reply('saved-task', JSON.parse(data))
+    const tasks = store.get('task', [])
+    console.log(tasks)
+    tasks.push(task)
+    store.set('task', tasks)
+    console.log('tasks node',tasks)
+    event.reply('saved-task', tasks)
 })
