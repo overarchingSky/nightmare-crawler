@@ -66,8 +66,11 @@
         <md-empty-state
           md-label="恭喜您，已完成配置！"
           md-description="快点击下方保存按钮保存吧">
+          <md-button title="保存" class="save-task md-raised md-primary" @click="handleSaveTask">
+            <md-icon>check</md-icon>
+          </md-button>
         </md-empty-state>
-        <slot name="action"/>
+        <!-- <slot name="action"/> -->
       </md-step>
     </md-steppers>
   </div>
@@ -76,9 +79,11 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld form '@/components/HelloWorld.vue'
+const { ipcRenderer } = window.electron
 import { taskType } from '@enums/task-type'
 export default {
   name: "create-release-task-form",
+  props:['showCreateTaskPanel'],
   data() {
     return {
       active: 'first',
@@ -104,6 +109,16 @@ export default {
           }
         
       },
+      handleSaveTask(){
+        // 保存任务到本地
+        // ipcRenderer.once('saved-task',() => {
+        //   // 关闭dialog
+        //   this.$emit('update:showCreateTaskPanel',false)
+        //   // 刷新任务列表
+        //   this.$emit('on-add-task')
+        // })
+        ipcRenderer.send('save-task',this.form)
+      }
   }
 };
 </script>

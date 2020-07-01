@@ -30,15 +30,15 @@
       <md-dialog :md-active.sync="showCreateTaskPanel">
         <md-dialog-title>
           create task 2
-          <md-button class="md-icon-button">
+          <md-button class="close" @click="showCreateTaskPanel = false">
             <md-icon>close</md-icon>
           </md-button>
         </md-dialog-title>
-        <create-release-task-form ref="form">
-          <md-dialog-actions slot="action">
+        <create-release-task-form :showCreateTaskPanel.sync="showCreateTaskPanel" ref="form" @on-add-task="load">
+          <!-- <md-dialog-actions slot="action">
             <md-button class="md-primary" @click="showCreateTaskPanel = false">取消</md-button>
             <md-button class="md-primary" @click="createTask">保存</md-button>
-          </md-dialog-actions>
+          </md-dialog-actions> -->
         </create-release-task-form>        
         
       </md-dialog>
@@ -47,6 +47,7 @@
 
 <script>
 // @ is an alias to /src
+const { ipcRenderer } = window.electron
 import CreateReleaseTaskForm from '@/components/create-release-task-form.vue'
 
 export default {
@@ -74,13 +75,30 @@ export default {
         this.list.push(task)
         this.showCreateTaskPanel = false
       })
+    },
+    load(tasks){
+      this.list = tasks
     }
+  },
+  created(){
+    ipcRenderer.on('saved-task',(tasks) => {
+      // 关闭dialog
+      this.showCreateTaskPanel = false
+      // 刷新任务列表
+      this.load(tasks)
+    })
   }
 }
 </script>
 <style lang="scss">
 .md-dialog-container{
     width:650px;
+    .close{
+      position:absolute;
+      top:14px;
+      right:18px;
+      min-width:auto;
+    }
 }
   
 </style>

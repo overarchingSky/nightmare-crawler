@@ -109,3 +109,8 @@ ipcMain.on('login-success', (e, shopUrl) => {
     // 恢复cookies现场
     //recoveyCookies(win, cookies)
 })
+
+ipcMain.on('save-task', (event, task) => {
+    store.set('task', task)
+    event.reply('saved-task', JSON.parse(data))
+})
