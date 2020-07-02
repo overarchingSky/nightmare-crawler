@@ -1,8 +1,10 @@
 import Vue from 'vue'
 // import { MdButton, MdContent, MdTabs, MdApp, MdDrawer, MdTable, MdIcon, MdList, MdCard, MdEmptyState, MdForms, MdDialog, MdField, MdInput,MdS } from 'vue-material/dist/components'
+// vue-material doc https://vuematerial.io
 import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
 import 'vue-material/dist/theme/default.css'
+// icon doc https://material.io/resources/icons/?icon=update&style=sharp
 import 'material-design-icons/iconfont/material-icons.css'
 Vue.use(VueMaterial)
 // Vue.use(MdButton)
