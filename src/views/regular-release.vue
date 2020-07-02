@@ -7,23 +7,15 @@
       md-description="empty">
     </md-empty-state>
     <md-list v-else>
-      <md-subheader>Settings</md-subheader>
+      <md-subheader>请在下方启用/停用任务</md-subheader>
 
-      <md-list-item>
-        <md-icon>network_wifi</md-icon>
-        <span class="md-list-item-text">WiFi</span>
-        <md-switch v-model="settings.wifi" />
-      </md-list-item>
-
-      <md-list-item>
-        <md-icon>bluetooth</md-icon>
-        <span class="md-list-item-text">Bluetooth</span>
-        <md-switch v-model="settings.bluetooth" />
-      </md-list-item>
-
-      <md-list-item>
-        <md-icon>data_usage</md-icon>
-        <span class="md-list-item-text">Data Usage</span>
+      <md-list-item @click="() => {}" v-for="task in list" :key="task.id">
+        <md-icon>update</md-icon>
+        <span class="md-list-item-text">{{task.taskName}}</span>
+        <md-switch v-model="task.enable" :title="task.enable ? '停用' : '启用'" @click.stop />
+        <md-button @click="handDeleteTask(task.id)">
+          <md-icon>delete_sweep</md-icon>
+        </md-button>
       </md-list-item>
     </md-list>
     <md-button class="md-primary md-raised" @click="openPanel">Create task</md-button>
@@ -78,6 +70,10 @@ export default {
     },
     load(tasks){
       this.list = tasks
+    },
+    handDeleteTask(id){
+      console.log('删除任务', id)
+      // 删除任务
     }
   },
   created(){

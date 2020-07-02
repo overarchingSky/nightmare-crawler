@@ -4,7 +4,9 @@
       <md-tab id="defaults" md-label="商品抓取"  @click="to('/')" exact></md-tab>
        <md-tab id="regular-releas" md-label="定时发布" exact @click="to('/regular-release')"></md-tab>
     </md-tabs>
-    <router-view />
+    <keep-alive>
+      <router-view />
+    </keep-alive>
   </div>
 </template>
 <script>
