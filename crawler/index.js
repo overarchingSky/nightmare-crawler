@@ -26,12 +26,12 @@ function createWindow() {
             }
         })
         // 恢复cookies现场
-    //recoveyCookies(win, cookies)
+        //recoveyCookies(win, cookies)
 
     // 加载应用程序主页
-    console.log('env',process.env.NODE_ENV)
-    process.env.NODE_ENV === 'production' ? win.loadFile(path.resolve(__dirname, '../dist/index.html')) : win.loadURL('http://192.168.142.20:8991')
-    
+    console.log('env', process.env.NODE_ENV)
+    process.env.NODE_ENV === 'production' ? win.loadFile(path.resolve(__dirname, '../dist/index.html')) : win.loadURL('http://localhost:8991')
+
     // 打开开发者工具
     win.webContents.openDevTools()
 }
@@ -86,14 +86,14 @@ ipcMain.on('get-prod', (event, options) => {
         // })
 })
 
-ipcMain.on('view-doc',() => {
-    console.log('path',path.resolve(__dirname,'python-task/data-sheet'))
+ipcMain.on('view-doc', () => {
+    console.log('path', path.resolve(__dirname, 'python-task/data-sheet'))
     dialog.showOpenDialog({
         //title:'test'
-        defaultPath:path.resolve(__dirname,'python-task/data-sheet'),
-        properties:['openFile'],
-        filters:[
-            { name: 'All Files', extensions: ['csv','json'] }
+        defaultPath: path.resolve(__dirname, 'python-task/data-sheet'),
+        properties: ['openFile'],
+        filters: [
+            { name: 'All Files', extensions: ['csv', 'json'] }
         ]
     }).then(file => {
         console.log('选择文件：')
@@ -115,6 +115,11 @@ ipcMain.on('save-task', (event, task) => {
     console.log(tasks)
     tasks.push(task)
     store.set('task', tasks)
-    console.log('tasks node',tasks)
+    console.log('tasks node', tasks)
     event.reply('saved-task', tasks)
+})
+
+ipcMain.on('get-task', (event) => {
+    const tasks = store.get('task', [])
+    event.reply('get-task', tasks)
 })

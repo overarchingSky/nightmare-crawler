@@ -6,22 +6,16 @@
       md-label="Create your first task"
       md-description="empty">
     </md-empty-state>
-    <md-list v-else>
-      <md-subheader>请在下方启用/停用任务</md-subheader>
-
-      <md-list-item @click="() => {}" v-for="task in list" :key="task.id">
-        <md-icon>update</md-icon>
-        <span class="md-list-item-text">{{task.taskName}}</span>
-        <md-switch v-model="task.enable" :title="task.enable ? '停用' : '启用'" @click.stop />
-        <md-button @click="handDeleteTask(task.id)">
-          <md-icon>delete_sweep</md-icon>
-        </md-button>
-      </md-list-item>
-    </md-list>
+        
+    <template v-else>
+        <md-subheader>请在下方启用/停用任务</md-subheader>
+        <list :list="list"></list>
+    </template>
+    
     <md-button class="md-primary md-raised" @click="openPanel">Create task</md-button>
       <md-dialog :md-active.sync="showCreateTaskPanel">
         <md-dialog-title>
-          create task 2
+          create task
           <md-button class="close" @click="showCreateTaskPanel = false">
             <md-icon>close</md-icon>
           </md-button>
@@ -41,10 +35,12 @@
 // @ is an alias to /src
 const { ipcRenderer } = window.electron
 import CreateReleaseTaskForm from '@/components/create-release-task-form.vue'
+import List from './list'
 
 export default {
   name: 'regular-release',
   components: {
+    List,
     CreateReleaseTaskForm
   },
   data(){
@@ -58,27 +54,6 @@ export default {
       return this.list.length === 0
     }
   },
-  watch:{
-    'task.enable'(val){
-      if(val){
-        //开启任务
-        switch(task.type){
-          case taskType['弹性间隔']:
-            cosnt [min,max] = taask.intervalSection
-            const interval = min + Math.random() * (max - min)
-            //task中的时间是以分钟为单位，许哟乘以 60 * 1000转化为毫秒
-            setInterVal(this.releaseProduct,task.interval * 60 * 1000)
-            break;
-          case taskType['固定间隔']:
-            //task中的时间是以分钟为单位，许哟乘以 60 * 1000转化为毫秒
-            setInterVal(this.releaseProduct,task.interval * 60 * 1000)
-            break;
-        }
-      }else{
-        //停止任务
-      }
-    }
-  },
   methods:{
     openPanel(){
       this.showCreateTaskPanel = true
@@ -90,14 +65,19 @@ export default {
       })
     },
     load(tasks){
-      this.list = tasks
-    },
-    handDeleteTask(id){
-      console.log('删除任务', id)
-      // 删除任务
+        if(tasks){
+            this.list = tasks
+            return
+        }
+        ipcRenderer.once('get-task',(e,tasks) => {
+            console.log('load',tasks)
+            this.list = tasks
+        })
+        ipcRenderer.send('get-task')
     }
   },
   created(){
+    this.load()
     ipcRenderer.on('saved-task',(e, tasks) => {
       console.log('tasks',tasks)
       // 关闭dialog
