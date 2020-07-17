@@ -2,15 +2,9 @@ const { session, BrowserWindow, ipcMain } = require('electron')
 const store = new(require('electron-store'))
 const { cookiesKey } = require('../const')
 const path = require('path')
-console.log('key', cookiesKey)
-    // 获取到默认session，并查看其中是否存在cookie，或者cookie是否有效
-    // const defaultSession = session.defaultSession
-    // const cookies = defaultSession.cookies
-    // const isEffect = Object.keys(cookies).length > 0
 let cookies = store.get(cookiesKey) || [];
-const isEffect = false //cookies.length > 0
+const isEffect = cookies.length > 0
 let isCookiesChanged = false;
-console.log('cookies', Object.keys(cookies))
 if (!isEffect) {
     // to login
     startLogin()
@@ -24,6 +18,7 @@ function startLogin() {
         height: 600,
         // 这个会导致某些接口容易调用失败
         webPreferences: {
+            // 注入调用test.js检查是否登录成功
             preload: path.resolve(__dirname, './test.js')
                 //nodeIntegration: true
         }
@@ -34,7 +29,6 @@ function startLogin() {
         //win.loadURL('https://www.zhihu.com/people/dou-jiao-87-20')
         // 打开开发者工具
     win.webContents.openDevTools()
-    const cookies = win.webContents.session.cookies
         // cookies.on('changed', handleCookieChange)
 
     function handleCookieChange(...e) {

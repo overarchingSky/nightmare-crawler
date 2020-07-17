@@ -15,7 +15,7 @@ let win
 
 function createWindow() {
     // 引入登陆模块，如果未登录，将会打开新窗口并访问登陆页
-    //const cookies = require('./auth/login')
+    const cookies = require('./auth/login')
 
     // 创建浏览器窗口
     win = new BrowserWindow({
@@ -26,7 +26,7 @@ function createWindow() {
             }
         })
         // 恢复cookies现场
-        //recoveyCookies(win, cookies)
+    recoveyCookies(win, cookies)
 
     // 加载应用程序主页
     console.log('env', process.env.NODE_ENV)
@@ -60,17 +60,29 @@ app.on('activate', () => {
 // 您可以把应用程序其他的流程写在在此文件中
 
 ipcMain.on('get-prod', (event, options) => {
-    let cookies = store.get(cookiesKey) || [];
-    child_process.exec(`scrapy crawl fril -a cookies=${JSON.stringify(cookies)}`, {
+    let cookies = {
+            "_ra":"1593332952428|23099db8-3a17-470e-9a72-8bce3dd5e074",
+            "__gads":"ID=70088d27be40d614:T=1593332953:S=ALNI_MbuN15fTWskyScpKIMBl5V94LiUsw",
+            "_gid":"GA1.2.1018829010.1594605295",
+            "_ga":"GA1.2.1999933104.1593332952",
+            "_fbp":"fb.1.1594610025071.236646165"
+        }
+    //store.get(cookiesKey) || [];
+    console.log('get-prod')
+    //child_process.exec(`scrapy crawl fril -a cookies=${JSON.stringify({'aaa':'10'})}`, {
+        child_process.exec(`scrapy crawl fril -a cookies=${JSON.stringify(cookies)}`, {
             cwd: path.resolve(__dirname, './python-task')
         }, (err, response, ss) => {
-            console.log('++++++++++++++')
+            console.log('++++++++++++++',response)
+            console.log('++++++++++++++ error',err)
                 // console.log(response)
                 // if (Array.isArray(response)) {
                 //     event.reply('revice-prod', response)
                 // }
             let f = fs.readFile(path.resolve(__dirname, "./python-task/data-sheet/prod.json"), "utf-8", function(err, data) {
+                console.log('readFile ++++++')
                 console.log(data)
+                console.log('-------------')
                 event.reply('revice-prod', JSON.parse(data))
             })
         })
@@ -101,13 +113,12 @@ ipcMain.on('view-doc', () => {
     })
 })
 
-ipcMain.on('login-success', (e, shopUrl) => {
+ipcMain.on('login-success', (e, shopUrl,cookies) => {
     console.log('login success', shopUrl)
     store.set('shopUrl', shopUrl)
-        //登陆成功，执行注入cookies逻辑
-    let cookies = store.get(cookiesKey) || [];
-    // 恢复cookies现场
-    //recoveyCookies(win, cookies)
+    //登陆成功，执行注入cookies逻辑
+    store.set(cookiesKey, cookies)
+    recoveyCookies(win, cookies)
 })
 
 ipcMain.on('save-task', (event, task) => {
