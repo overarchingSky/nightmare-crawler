@@ -15,6 +15,7 @@ from fril_jp.spiders.csv_item_exporter import MyProjectCsvItemExporter
 class CSVFrilJpPipeline:
     def __init__(self):
         # wb 二进制方式打开
+        print('prod.csv')
         self.fp = open("data-sheet/prod.csv","wb")
         self.exporter = MyProjectCsvItemExporter(self.fp, 'utf-8')
         self.exporter.start_exporting()

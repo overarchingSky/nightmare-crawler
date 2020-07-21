@@ -68,22 +68,28 @@ ipcMain.on('get-prod', (event, options) => {
             "_fbp":"fb.1.1594610025071.236646165"
         }
     //store.get(cookiesKey) || [];
-    console.log('get-prod')
+    console.log('get-prod',path.resolve(__dirname, './python-task'))
     //child_process.exec(`scrapy crawl fril -a cookies=${JSON.stringify({'aaa':'10'})}`, {
-        child_process.exec(`scrapy crawl fril -a cookies=${JSON.stringify(cookies)}`, {
+        const workerProcess = child_process.exec(`scrapy crawl fril -a cookies=${JSON.stringify(cookies)}`, {
+        //child_process.exec(`scrapy crawl fril`, {
             cwd: path.resolve(__dirname, './python-task')
         }, (err, response, ss) => {
-            console.log('++++++++++++++',response)
-            console.log('++++++++++++++ error',err)
                 // console.log(response)
                 // if (Array.isArray(response)) {
                 //     event.reply('revice-prod', response)
                 // }
+            
+        })
+        // workerProcess.stdout.on('data',function(data){
+        //     console.log(data)
+        // })
+        const filePath = path.resolve(__dirname, "./python-task/data-sheet/prod.json")
+        fs.watchFile(filePath,function(curr, prev){
             let f = fs.readFile(path.resolve(__dirname, "./python-task/data-sheet/prod.json"), "utf-8", function(err, data) {
-                console.log('readFile ++++++')
-                console.log(data)
-                console.log('-------------')
-                event.reply('revice-prod', JSON.parse(data))
+                if(data.length > 0){
+                    event.reply('revice-prod', JSON.parse(data))
+                    fs.unwatchFile(filePath)
+                }
             })
         })
         // pageCount = 1
@@ -97,6 +103,9 @@ ipcMain.on('get-prod', (event, options) => {
         //     }
         // })
 })
+
+
+
 
 ipcMain.on('view-doc', () => {
     console.log('path', path.resolve(__dirname, 'python-task/data-sheet'))
