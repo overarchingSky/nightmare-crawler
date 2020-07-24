@@ -117,36 +117,43 @@ class FrilSpider(scrapy.Spider):
         formSelector = response.xpath('.//form[@id="item-form"]')
         detailStr = formSelector.xpath('./div[last()]/@data-react-props').get()
         #print(detailStr)
-        formData = FrilJpItem()
+        formData = {} #FrilJpItem()
         inputs = formSelector.xpath('.//input[@type="hidden"]')
         for inputSelector in inputs:
             key = inputSelector.xpath('@name').get()
             field = key.replace('[]','')#inputSelector.xpath('@id').get()
             value = inputSelector.xpath('@value').get()
-            # if not value is None:
-            #     if isinstance(formData.__dict__.get(field), tuple):
-            #         print('+++++ field 3')
-            #         formData[field] += (value,)
-            #     elif isinstance(formData.__dict__.get(field), str):
-            #         print('+++++ field 2')
-            #         formData[field] = (formData[field],value)
-            #     else:
-            #         print('+++++ field 1')
-            #         formData[field] = value
-            
-            #formData[key] = (value,)
+
             if key.endswith('[]'):
-                if isinstance(formData.__dict__.get(field),list):
+                if not formData.get(field) is None:
                     if not value is None:
-                        formData[field].append(str(value))
+                        formData.get(field).append(str(value))
                 else :
+                    #print('++++++++++++++:' + field)
+                    #print(value)
+                    #print(inputSelector.get())
                     formData[field] = [str(value)] if not value is None else []
+                    #print(formData)
             else:
                 formData[field] = str(value) if not value is None else ''
+            # if key.endswith('[]'):
+            #     if not formData.__dict__.get(field) is None:
+            #         if not value is None:
+            #             formData[field].append(str(value))
+            #     else :
+            #         print('++++++++++++++:' + field)
+            #         print(value)
+            #         print(inputSelector.get())
+            #         formData[field] = [str(value)] if not value is None else []
+            #         print(formData)
+            # else:
+            #     formData[field] = str(value) if not value is None else ''
+        FrilItem = FrilJpItem(utf8 = formData['utf8'], _method = formData['_method'],authenticity_token=formData['authenticity_token'],item_img_ids=formData['item_img_ids'],updates=formData['updates'],set_images=formData['set_images'],crop_x=formData['crop_x'],crop_y=formData['crop_y'],crop_size=formData['crop_size'])
         info =  json.loads(detailStr)['item']
         infoVm = InfoItem(user_id=info['user_id'],name = info['name'],detail = info['detail'],parent_category_id = info['parent_category_id'],category_id = info['category_id'],size_id = info['size_id'], brand_id = info['brand_id'],informal_brand_id = info['informal_brand_id'], status = info['status'],origin_price = info['origin_price'],sell_price = info['sell_price'],transaction_status = info['transaction_status'],carriage = info['carriage'],delivery_method = info['delivery_method'],delivery_date = info['delivery_date'],delivery_area = info['delivery_area'],open_flag = info['open_flag'],sold_out_flag = info['sold_out_flag'],related_size_group_ids = info['related_size_group_ids'],request_required = info['request_required'])
-        formData['item'] = infoVm
-        yield formData
+        
+        FrilItem['item'] = infoVm
+        yield FrilItem
         #return FormRequest(url='https://fril.jp/item/validate',method='POST',headers = self.headers,cookies = self.cookies,formdata = formData,callback=self.parseDss)
 
 

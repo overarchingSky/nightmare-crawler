@@ -7,6 +7,7 @@ const path = require('path')
 const child_process = require('child_process');
 const fs = require('fs')
 require('./menu')
+const product = require('./product')
 
 console.log('-----', app.getPath('userData'))
 
@@ -67,40 +68,22 @@ ipcMain.on('get-prod', (event, options) => {
             "_ga":"GA1.2.1999933104.1593332952",
             "_fbp":"fb.1.1594610025071.236646165"
         }
-    //store.get(cookiesKey) || [];
-    console.log('get-prod',path.resolve(__dirname, './python-task'))
-    //child_process.exec(`scrapy crawl fril -a cookies=${JSON.stringify({'aaa':'10'})}`, {
+        // 在node进程中调用python爬虫，要避免在python中进行log，即print，因为这些log会出现在node的控制台中，但是因为node默认编码和python不一致，所以会导致node执行异常，从而不能抓取到数据
+        // 当然，也可以想办法调整node的encode，不过这里暂时没有研究
         const workerProcess = child_process.exec(`scrapy crawl fril -a cookies=${JSON.stringify(cookies)}`, {
-        //child_process.exec(`scrapy crawl fril`, {
             cwd: path.resolve(__dirname, './python-task')
-        }, (err, response, ss) => {
-                // console.log(response)
-                // if (Array.isArray(response)) {
-                //     event.reply('revice-prod', response)
-                // }
-            
         })
         // workerProcess.stdout.on('data',function(data){
         //     console.log(data)
         // })
         const filePath = path.resolve(__dirname, "./python-task/data-sheet/prod.json")
-        fs.watchFile(filePath,function(curr, prev){
-            let f = fs.readFile(path.resolve(__dirname, "./python-task/data-sheet/prod.json"), "utf-8", function(err, data) {
-                if(data.length > 0){
-                    event.reply('revice-prod', JSON.parse(data))
-                    fs.unwatchFile(filePath)
-                }
-            })
-        })
-        // pageCount = 1
-        // const shapUrl = 'https://fril.jp/category/668' //store.get('shopUrl')
-        // getProd((page) => {
-        //     return `${shapUrl}/page/${page}`
-        // }, pageCount, (data, finished) => {
-        //     event.reply('revice-prod', data)
-        //     if (finished) {
-        //         event.reply('revice-prod-end')
-        //     }
+        // fs.watchFile(filePath,function(curr, prev){
+        //     let f = fs.readFile(path.resolve(__dirname, "./python-task/data-sheet/prod.json"), "utf-8", function(err, data) {
+        //         if(data && data.length > 0){
+        //             event.reply('revice-prod', JSON.parse(data))
+        //             fs.unwatchFile(filePath)
+        //         }
+        //     })
         // })
 })
 
@@ -136,10 +119,29 @@ ipcMain.on('save-task', (event, task) => {
     tasks.push(task)
     store.set('task', tasks)
     console.log('tasks node', tasks)
-    event.reply('saved-task', tasks)
+    event.reply('saved-task')
+    event.reply('get-task', tasks)
 })
 
 ipcMain.on('get-task', (event) => {
     const tasks = store.get('task', [])
     event.reply('get-task', tasks)
+})
+
+ipcMain.on('delete-task', (event,id) => {
+    const tasks = store.get('task', [])
+    const index = tasks.findIndex(task => task.id === id)
+    console.log('delete-task',index,id)
+    index > -1 && tasks.splice(index,1)
+    store.set('task', tasks)
+    event.reply('get-task', tasks)
+})
+
+ipcMain.on('start-task', async (event,id) => {
+    const tasks = store.get('task', [])
+    const task = tasks.find(task => task.id === id)
+    const prods = await product.getDetails(undefined,id)
+    console.log(prods)
+    product.release(prods)
+    // event.reply('get-task', tasks)
 })

@@ -69,10 +69,7 @@ export default {
             this.list = tasks
             return
         }
-        ipcRenderer.once('get-task',(e,tasks) => {
-            console.log('load',tasks)
-            this.list = tasks
-        })
+        
         ipcRenderer.send('get-task')
     }
   },
@@ -83,8 +80,12 @@ export default {
       // 关闭dialog
       this.showCreateTaskPanel = false
       // 刷新任务列表
-      this.load(tasks)
+      //this.load(tasks)
     })
+    ipcRenderer.on('get-task',(e,tasks) => {
+            console.log('load',tasks)
+            this.list = tasks
+        })
   }
 }
 </script>

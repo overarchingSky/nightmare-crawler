@@ -54,7 +54,7 @@ export default {
       ipcRenderer.send('view-doc')
     },
     fullData(e,data){
-      this.list.push(...data)
+      this.list.push(...data.map(item => item.item))
       console.log(this.list)
     },
     endLoad(){

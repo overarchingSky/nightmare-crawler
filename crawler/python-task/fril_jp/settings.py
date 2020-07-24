@@ -68,7 +68,7 @@ DEFAULT_REQUEST_HEADERS = {
 ITEM_PIPELINES = {
    # 多个pipelines执行的优先级
    'fril_jp.pipelines.FrilJpPipeline': 300,
-   'fril_jp.pipelines.CSVFrilJpPipeline': 299
+   #'fril_jp.pipelines.CSVFrilJpPipeline': 299
 }
 
 # CSV_DELIMITER = ","

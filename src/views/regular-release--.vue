@@ -58,27 +58,27 @@ export default {
       return this.list.length === 0
     }
   },
-  watch:{
-    'task.enable'(val){
-      if(val){
-        //开启任务
-        switch(task.type){
-          case taskType['弹性间隔']:
-            cosnt [min,max] = taask.intervalSection
-            const interval = min + Math.random() * (max - min)
-            //task中的时间是以分钟为单位，许哟乘以 60 * 1000转化为毫秒
-            setInterVal(this.releaseProduct,task.interval * 60 * 1000)
-            break;
-          case taskType['固定间隔']:
-            //task中的时间是以分钟为单位，许哟乘以 60 * 1000转化为毫秒
-            setInterVal(this.releaseProduct,task.interval * 60 * 1000)
-            break;
-        }
-      }else{
-        //停止任务
-      }
-    }
-  },
+  // watch:{
+  //   'task.enable'(val){
+  //     if(val){
+  //       //开启任务
+  //       switch(task.type){
+  //         case taskType['弹性间隔']:
+  //           cosnt [min,max] = task.intervalSection
+  //           const interval = min + Math.random() * (max - min)
+  //           //task中的时间是以分钟为单位，许哟乘以 60 * 1000转化为毫秒
+  //           setInterVal(this.releaseProduct,task.interval * 60 * 1000)
+  //           break;
+  //         case taskType['固定间隔']:
+  //           //task中的时间是以分钟为单位，许哟乘以 60 * 1000转化为毫秒
+  //           setInterVal(this.releaseProduct,task.interval * 60 * 1000)
+  //           break;
+  //       }
+  //     }else{
+  //       //停止任务
+  //     }
+  //   }
+  // },
   methods:{
     openPanel(){
       this.showCreateTaskPanel = true

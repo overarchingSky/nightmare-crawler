@@ -90,6 +90,7 @@ export default {
       taskType,
       steps:[false,false,false],
       form: {
+        id:Date.now(),
         taskName:'',
         intervalSection:[],
         interval:'',

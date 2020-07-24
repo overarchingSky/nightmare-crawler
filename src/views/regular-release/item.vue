@@ -11,6 +11,7 @@
 </template>
 
 <script>
+const { ipcRenderer } = window.electron
 import { taskType } from '@enums/task-type'
 export default {
     name:'regular-release-list-item',
@@ -50,10 +51,13 @@ export default {
   methods:{
     releaseProduct(){
         console.log('定时任务',this.task.taskName)
+        ipcRenderer.send('start-task',this.task.id)
     },
     handDeleteTask(id){
         console.log('删除任务', id)
+        this.task.enable = false
         // 删除任务
+        ipcRenderer.send('delete-task',id)
     }
   }
 }
