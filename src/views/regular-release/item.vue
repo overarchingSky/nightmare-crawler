@@ -27,6 +27,7 @@ export default {
     'task.enable'(val){
       if(val){
         //开启任务
+        console.log('开启任务',this.task.name)
         if(this.task.immedation){
             this.releaseProduct()
         }

@@ -7,8 +7,7 @@ const path = require('path')
 const child_process = require('child_process');
 const fs = require('fs')
 require('./menu')
-const product = require('./product')
-
+const product = require('./product/index')
 console.log('-----', app.getPath('userData'))
 
 //应用程序主界面
@@ -77,14 +76,14 @@ ipcMain.on('get-prod', (event, options) => {
         //     console.log(data)
         // })
         const filePath = path.resolve(__dirname, "./python-task/data-sheet/prod.json")
-        // fs.watchFile(filePath,function(curr, prev){
-        //     let f = fs.readFile(path.resolve(__dirname, "./python-task/data-sheet/prod.json"), "utf-8", function(err, data) {
-        //         if(data && data.length > 0){
-        //             event.reply('revice-prod', JSON.parse(data))
-        //             fs.unwatchFile(filePath)
-        //         }
-        //     })
-        // })
+        fs.watchFile(filePath,function(curr, prev){
+            let f = fs.readFile(path.resolve(__dirname, "./python-task/data-sheet/prod.json"), "utf-8", function(err, data) {
+                if(data && data.length > 0){
+                    event.reply('revice-prod', JSON.parse(data))
+                    fs.unwatchFile(filePath)
+                }
+            })
+        })
 })
 
 
@@ -141,7 +140,6 @@ ipcMain.on('start-task', async (event,id) => {
     const tasks = store.get('task', [])
     const task = tasks.find(task => task.id === id)
     const prods = await product.getDetails(undefined,id)
-    console.log(prods)
     product.release(prods)
     // event.reply('get-task', tasks)
 })

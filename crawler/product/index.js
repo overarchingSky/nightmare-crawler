@@ -1,11 +1,15 @@
 const _ = require('lodash')
 const path = require('path')
 const axios = require('axios')
+const cookies = require('../auth/login')
+const fs = require('fs')
+const qs = require('qs')
+
 function getProductPath(){
-    return path.resolve(__dirname, "./python-task/data-sheet/prod.json")
+    return path.resolve(__dirname, "../python-task/data-sheet/prod.json")
 }
 
-module.exports = function getDetails(productIds,taskId){
+function getDetails(productIds,taskId){
     return new Promise((resolve,reject) => {
         let f = fs.readFile(getProductPath(), "utf-8", function(err, data) {
             if(err){
@@ -27,7 +31,7 @@ module.exports = function getDetails(productIds,taskId){
     
 }
 
-module.exports = function getDetail(productId,taskId){
+function getDetail(productId,taskId){
     return new Promise((resolve,reject) => {
         let f = fs.readFile(getProductPath(), "utf-8", function(err, data) {
             if(err){
@@ -48,10 +52,27 @@ module.exports = function getDetail(productId,taskId){
     
 }
 
-module.exports = function release(products){
+function release(products){
     products = _.castArray(products)
+    products = [products[0]]
     products.forEach(product => {
-        product.name = 'refreshd:' + product.name
-        axios.post('https://fril.jp/item/validate',{},{})
+        product.item.name = 'refreshd:' + product.item.name
+        console.log(product)
+        data = product
+        //data = qs.stringify(product, { arrayFormat: 'brackets' })
+        console.log(data)
+        axios.post('https://fril.jp/item/validate',data,{
+            cookies:cookies,
+            headers:{
+                'Content-Type':'application/x-www-form-urlencoded'
+            }
+        }).then(res => console.log(res))
+        .catch(error => console.log(error))
     })
+}
+
+module.exports = {
+    getDetail,
+    getDetails,
+    release
 }
