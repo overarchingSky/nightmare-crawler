@@ -85,6 +85,7 @@ function release(products) {
                 f.append(key, val)
             })
             // console.log(f)
+            // authenticity_token和cookies具有一定的关联，firl校验了其有效性
         try {
             axios({
                     url: 'https://sug.so.360.cn/suggest?callback=suggest_so&encodein=utf-8&encodeout=utf-8&format=json&fields=word',
