@@ -5,6 +5,7 @@ const path = require('path')
 let cookies = store.get(cookiesKey) || [];
 const isEffect = cookies.length > 0
 let isCookiesChanged = false;
+console.log(store.path)
 if (!isEffect) {
     // to login
     startLogin()

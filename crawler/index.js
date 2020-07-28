@@ -61,29 +61,29 @@ app.on('activate', () => {
 
 ipcMain.on('get-prod', (event, options) => {
     let cookies = {
-            "_ra":"1593332952428|23099db8-3a17-470e-9a72-8bce3dd5e074",
-            "__gads":"ID=70088d27be40d614:T=1593332953:S=ALNI_MbuN15fTWskyScpKIMBl5V94LiUsw",
-            "_gid":"GA1.2.1018829010.1594605295",
-            "_ga":"GA1.2.1999933104.1593332952",
-            "_fbp":"fb.1.1594610025071.236646165"
+            "_ra": "1593332952428|23099db8-3a17-470e-9a72-8bce3dd5e074",
+            "__gads": "ID=70088d27be40d614:T=1593332953:S=ALNI_MbuN15fTWskyScpKIMBl5V94LiUsw",
+            "_gid": "GA1.2.1018829010.1594605295",
+            "_ga": "GA1.2.1999933104.1593332952",
+            "_fbp": "fb.1.1594610025071.236646165"
         }
         // 在node进程中调用python爬虫，要避免在python中进行log，即print，因为这些log会出现在node的控制台中，但是因为node默认编码和python不一致，所以会导致node执行异常，从而不能抓取到数据
         // 当然，也可以想办法调整node的encode，不过这里暂时没有研究
-        const workerProcess = child_process.exec(`scrapy crawl fril -a cookies=${JSON.stringify(cookies)}`, {
+    const workerProcess = child_process.exec(`scrapy crawl fril -a cookies=${JSON.stringify(cookies)}`, {
             cwd: path.resolve(__dirname, './python-task')
         })
         // workerProcess.stdout.on('data',function(data){
         //     console.log(data)
         // })
-        const filePath = path.resolve(__dirname, "./python-task/data-sheet/prod.json")
-        fs.watchFile(filePath,function(curr, prev){
-            let f = fs.readFile(path.resolve(__dirname, "./python-task/data-sheet/prod.json"), "utf-8", function(err, data) {
-                if(data && data.length > 0){
-                    event.reply('revice-prod', JSON.parse(data))
-                    fs.unwatchFile(filePath)
-                }
-            })
+    const filePath = path.resolve(__dirname, "./python-task/data-sheet/prod.json")
+    fs.watchFile(filePath, function(curr, prev) {
+        let f = fs.readFile(path.resolve(__dirname, "./python-task/data-sheet/prod.json"), "utf-8", function(err, data) {
+            if (data && data.length > 0) {
+                event.reply('revice-prod', JSON.parse(data))
+                fs.unwatchFile(filePath)
+            }
         })
+    })
 })
 
 
@@ -104,10 +104,10 @@ ipcMain.on('view-doc', () => {
     })
 })
 
-ipcMain.on('login-success', (e, shopUrl,cookies) => {
+ipcMain.on('login-success', (e, shopUrl, cookies) => {
     console.log('login success', shopUrl)
     store.set('shopUrl', shopUrl)
-    //登陆成功，执行注入cookies逻辑
+        //登陆成功，执行注入cookies逻辑
     store.set(cookiesKey, cookies)
     recoveyCookies(win, cookies)
 })
@@ -127,21 +127,21 @@ ipcMain.on('get-task', (event) => {
     event.reply('get-task', tasks)
 })
 
-ipcMain.on('delete-task', (event,id) => {
+ipcMain.on('delete-task', (event, id) => {
     const tasks = store.get('task', [])
     const index = tasks.findIndex(task => task.id === id)
-    console.log('delete-task',index,id)
-    index > -1 && tasks.splice(index,1)
+    console.log('delete-task', index, id)
+    index > -1 && tasks.splice(index, 1)
     store.set('task', tasks)
     event.reply('get-task', tasks)
 })
 
-ipcMain.on('start-task', async (event,id) => {
+ipcMain.on('start-task', async(event, id) => {
     const tasks = store.get('task', [])
     const task = tasks.find(task => task.id === id)
-    const prods = await product.getDetails(undefined,id)
+    const prods = await product.getDetails(undefined, id)
     product.release(prods)
-    // event.reply('get-task', tasks)
+        // event.reply('get-task', tasks)
 })
 
 

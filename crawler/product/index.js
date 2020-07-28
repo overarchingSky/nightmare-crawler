@@ -1,45 +1,60 @@
 const _ = require('lodash')
 const path = require('path')
 const axios = require('axios')
-const cookies = require('../auth/login')
+    //const cookies = require('../auth/login')
 const fs = require('fs')
 const qs = require('qs')
+var FormData = require('form-data');
 
-function getProductPath(){
+// a = {
+//     name: 'tl',
+//     imgs: [1, 2, 3],
+//     item: {
+//         p: 3
+//     }
+// }
+
+// res = qs.stringify(a, { arrayFormat: 'brackets', encode: false })
+// console.log('res:')
+// console.log(res)
+
+// return
+
+function getProductPath() {
     return path.resolve(__dirname, "../python-task/data-sheet/prod.json")
 }
 
-function getDetails(productIds,taskId){
-    return new Promise((resolve,reject) => {
+function getDetails(productIds, taskId) {
+    return new Promise((resolve, reject) => {
         let f = fs.readFile(getProductPath(), "utf-8", function(err, data) {
-            if(err){
+            if (err) {
                 reject(err)
                 return
             }
             let products = []
-            if(data.length > 0){
-                products = JSON.parse(data)   
+            if (data.length > 0) {
+                products = JSON.parse(data)
             }
-            if(productIds){
+            if (productIds) {
                 productIds = _.castArray(productIds)
                 resolve(products.filter(product => productIds.includes(product.id)))
-                return 
+                return
             }
             resolve(products)
         })
     })
-    
+
 }
 
-function getDetail(productId,taskId){
-    return new Promise((resolve,reject) => {
+function getDetail(productId, taskId) {
+    return new Promise((resolve, reject) => {
         let f = fs.readFile(getProductPath(), "utf-8", function(err, data) {
-            if(err){
+            if (err) {
                 reject(err)
                 return
             }
             let products = []
-            if(data.length > 0){
+            if (data.length > 0) {
                 try {
                     products = JSON.parse(data)
                 } catch (error) {
@@ -49,37 +64,64 @@ function getDetail(productId,taskId){
             resolve(products.find(product => productId === product.id))
         })
     })
-    
+
 }
 
-function release(products){
+function release(products) {
     products = _.castArray(products)
     products = [products[0]]
     products.forEach(product => {
         product.item.name = 'refreshd:' + product.item.name
-        //console.log(product)
-        data = product
-        //data = qs.stringify(product, { arrayFormat: 'brackets' })
-        //console.log(data)
+            //console.log(product)
+        data = qs.stringify(product, { arrayFormat: 'brackets', encode: false }).split('&').map(item => item.split('='))
+            //data = qs.stringify(product, { arrayFormat: 'brackets' })
+            //console.log(data)
+        const f = new FormData()
+        data.forEach(([key, val]) => {
+                if (key === 'authenticity_token') {
+                    val = 'pekt/eH1FzhSCLJyl5tg+hBJd5xEYc9idWQ5akPn8pkd7nZXEjUqQCgU2AvjpKvGo25X82xlI2ItHjuozD88uA=='
+                }
+
+                f.append(key, val)
+            })
+            // console.log(f)
         try {
-            axios.post('https://fril.jp/item/validate',data,{
-            cookies:"_ra=1593332952428|23099db8-3a17-470e-9a72-8bce3dd5e074; _ga=GA1.2.1999933104.1593332952; _fbp=fb.1.1594610025071.236646165; __gads=ID=70088d27be40d614:T=1593332953:S=ALNI_MbuN15fTWskyScpKIMBl5V94LiUsw; recently_browsing_items=337644317%2C337641212%2C337607051%2C337616733; _gid=GA1.2.444561271.1595824654; _gat=1",//cookies,
-            headers:{
-                'Content-Type':'application/x-www-form-urlencoded'
-            }
-        }).then(res => {
-            console.log('success')
-            console.log(res)
-        })
-        .catch(error => {
-            console.log('error')
-            console.log(error)
-        })
+            axios({
+                    url: 'https://sug.so.360.cn/suggest?callback=suggest_so&encodein=utf-8&encodeout=utf-8&format=json&fields=word',
+                    method: 'get'
+                }).then(res => {
+                    console.log('success')
+                    console.log(res)
+                })
+                .catch(error => {
+                    console.log('error')
+                    console.log(error)
+                })
+            return
+            axios({
+                    url: 'https://fril.jp/item/validate',
+                    method: 'post',
+                    data: f,
+                    headers: {
+                        cookies: "_ga=GA1.2.1984736633.1592139397; _ra=1592139397733|9e8f25c9-8ccd-4554-a2b6-286054002272; __gads=ID=5c1c6c7ccd156e40:T=1592139399:S=ALNI_MYW-hssEmZP9rCWwgCUoku_5iD_cA; _fril_user_session_id=c583348e50cbd0f676b015c5d57986e7; _fbp=fb.1.1593178757450.753226682; recently_browsing_items=337634297; _gid=GA1.2.1443312505.1595946072; _gat=1", //cookies,
+
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
+                        'x-requested-with': 'XMLHttpRequest'
+                    }
+                }).then(res => {
+                    console.log('success')
+                    console.log(res)
+                })
+                .catch(error => {
+                    console.log('error')
+                    console.log(error)
+                })
         } catch (error) {
             console.log('catch error')
             console.log(error)
         }
-        
+
     })
 }
 
