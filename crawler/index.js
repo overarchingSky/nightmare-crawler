@@ -6,6 +6,7 @@ const getProd = require('./task/get-prod')
 const path = require('path')
 const child_process = require('child_process');
 const fs = require('fs')
+const mainT = require('../thread/render/main.win.js')
 require('./menu')
 const product = require('./product/index')
 console.log('-----', app.getPath('userData'))
@@ -137,10 +138,11 @@ ipcMain.on('delete-task', (event, id) => {
 })
 
 ipcMain.on('start-task', async(event, id) => {
-    const tasks = store.get('task', [])
-    const task = tasks.find(task => task.id === id)
-    const prods = await product.getDetails(undefined, id)
-    product.release(prods)
+    mainT.release(id)
+        // const tasks = store.get('task', [])
+        // const task = tasks.find(task => task.id === id)
+        // const prods = await product.getDetails(undefined, id)
+        // product.release(prods)
         // event.reply('get-task', tasks)
 })
 

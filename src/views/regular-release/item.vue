@@ -52,7 +52,9 @@ export default {
   methods:{
     releaseProduct(){
         console.log('定时任务',this.task.taskName)
-        ipcRenderer.send('start-task',this.task.id)
+        const mainT = require('../../../thread/render/main.win.js')
+        mainT.release(this.task.id)
+        //ipcRenderer.send('start-task',this.task.id)
     },
     handDeleteTask(id){
         console.log('删除任务', id)
