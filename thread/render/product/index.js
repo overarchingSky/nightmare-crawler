@@ -86,6 +86,7 @@ function release(products, token, cookie) {
                 })
                 // console.log(f)
                 // authenticity_token和cookies具有一定的关联，firl校验了其有效性
+        try{
             axios({
                     url: 'https://fril.jp/item/validate',
                     method: 'post',

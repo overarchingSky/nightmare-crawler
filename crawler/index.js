@@ -1,15 +1,19 @@
-const { app, dialog, BrowserWindow, ipcMain } = require('electron')
+const electron = require('electron')
+const { app, dialog, BrowserWindow, ipcMain } = electron
 const store = new(require('electron-store'))
+const Event = requrie('../thread/event-bus.js')
 const { cookiesKey } = require('./const')
 const recoveyCookies = require('./auth/recovey-cookies')
 const getProd = require('./task/get-prod')
 const path = require('path')
 const child_process = require('child_process');
 const fs = require('fs')
-const mainT = require('../thread/render/main.win.js')
+// const mainT = require('../thread/render/main.win.js')
 require('./menu')
 const product = require('./product/index')
 console.log('-----', app.getPath('userData'))
+
+electron.event = Event
 
 //应用程序主界面
 let win
@@ -137,13 +141,12 @@ ipcMain.on('delete-task', (event, id) => {
     event.reply('get-task', tasks)
 })
 
-ipcMain.on('start-task', async(event, id) => {
-    mainT.release(id)
+ipcMain.on('get-product-list', async(event, id) => {
+    // mainT.release(id)
         // const tasks = store.get('task', [])
         // const task = tasks.find(task => task.id === id)
-        // const prods = await product.getDetails(undefined, id)
-        // product.release(prods)
-        // event.reply('get-task', tasks)
+        const prods = await product.getDetails(undefined, id)
+        event.reply('get-task', prods)
 })
 
 

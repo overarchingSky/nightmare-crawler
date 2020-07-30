@@ -1,13 +1,16 @@
-const { remote } = require('electron')
+const remote = require('electron').remote
 const event = require('../event-bus.js')
+console.log('remote',remote)
 const mainWin = remote.getCurrentWindow()
 const product = require('./product/index')
     // const store = new(require('electron-store'))
-event.add('main', remote.getCurrentWindow())
+  
+//event.add('main', remote.getCurrentWindow())
 
 
-module.exports = {
+export default {
     release(id) {
+        console.log('release')
         const win = event.wins['back']
         const loaded = 'LOADED'
             // const js = fs.readFileSync(path.resolve(__dirname,''))

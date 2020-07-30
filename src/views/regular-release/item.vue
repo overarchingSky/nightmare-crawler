@@ -11,8 +11,11 @@
 </template>
 
 <script>
-const { ipcRenderer } = window.electron
+const { ipcRenderer,remote, event } = window.electron
 import { taskType } from '@enums/task-type'
+const mainT = require('../../../thread/render/main.win.js')
+const mainWin = remote.getCurrentWindow()
+console.log('mainT',mainT)
 export default {
     name:'regular-release-list-item',
     props:{
@@ -50,10 +53,84 @@ export default {
     }
   },
   methods:{
-    releaseProduct(){
+    getTokenAndCookie(){
+      // 
+      const hasCookieAndToken = !!window.authenticity_token
+      if(hasCookieAndToken){
+        this.releaseProduct(products)
+        return
+      }
+      const loaded = 'LOADED'
+      const backWin = event.wins['back']
+      mainWin.once(loaded, async(token, cookie) => {
+            // const tasks = store.get('task', [])
+            // const task = tasks.find(task => task.id === id)
+            document.cookie = cookie
+            window.authenticity_token = token
+            // 获取发布的商品明细列表
+            ipcRenderer.send('get-product-list',this.task.id)
+            ipcRenderer.once('ge-product-list-response',products => {
+                this.releaseProduct(products)
+            })
+            // const prods = await product.getDetails(undefined, id)
+            // product.release(prods)
+      })
+      backWin.webContents.executeJavaScript(`
+            const event = require('../event-bus.js')
+            const { remote } = require('electron')
+            window.addEventListener('load',() => {
+                //获取authenticity_token
+                let authenticity_token = document.querySelector('')
+                event.wins['main'].dispatch('${loaded}', authenticity_token, document.cookie)
+            })
+        `)
+    }
+    releaseProduct(products){
         console.log('定时任务',this.task.taskName)
-        const mainT = require('../../../thread/render/main.win.js')
-        mainT.release(this.task.id)
+        // const mainT = require('../thread/render/main.win.js')
+        products = _.castArray(products)
+        products = [products[0]]
+        products.forEach(product => {
+                product.item.name = 'refreshd:' + product.item.name
+                    //console.log(product)
+                data = qs.stringify(product, { arrayFormat: 'brackets', encode: false }).split('&').map(item => item.split('='))
+                    //data = qs.stringify(product, { arrayFormat: 'brackets' })
+                    //console.log(data)
+                const f = new FormData()
+                data.forEach(([key, val]) => {
+                        if (key === 'authenticity_token') {
+                            val = window.authenticity_token //'pekt/eH1FzhSCLJyl5tg+hBJd5xEYc9idWQ5akPn8pkd7nZXEjUqQCgU2AvjpKvGo25X82xlI2ItHjuozD88uA=='
+                        }
+
+                        f.append(key, val)
+                    })
+                    // console.log(f)
+                    // authenticity_token和cookies具有一定的关联，firl校验了其有效性
+            try{
+                axios({
+                        url: 'https://fril.jp/item/validate',
+                        method: 'post',
+                        data: f,
+                        headers: {
+                            cookies: document.cookie,
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
+                            'x-requested-with': 'XMLHttpRequest'
+                        }
+                    }).then(res => {
+                        console.log('success')
+                        console.log(res)
+                    })
+                    .catch(error => {
+                        console.log('error')
+                        console.log(error)
+                    })
+            } catch (error) {
+                console.log('catch error')
+                console.log(error)
+            }
+
+        })
         //ipcRenderer.send('start-task',this.task.id)
     },
     handDeleteTask(id){
