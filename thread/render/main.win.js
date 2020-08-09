@@ -1,10 +1,9 @@
-const remote = require('electron').remote
-const event = require('../event-bus.js')
-console.log('remote',remote)
+const remote = window.electron.remote
+import event from '../event-bus.js'
 const mainWin = remote.getCurrentWindow()
 const product = require('./product/index')
     // const store = new(require('electron-store'))
-  
+
 //event.add('main', remote.getCurrentWindow())
 
 

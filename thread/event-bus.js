@@ -1,5 +1,7 @@
-const { ipcRenderer, remote } = require('electron')
-const _ = require('lodash')
+//const { ipcRenderer, remote } = require('electron')
+const { ipcRenderer, remote } = window.electron
+
+import _ from 'lodash'
 
 class EventBus {
     wins = {}
@@ -67,4 +69,4 @@ class EventBus {
     }
 }
 
-module.exports = new EventBus()
+export const Event = new EventBus()

@@ -84,10 +84,11 @@ export default {
                 event.wins['main'].dispatch('${loaded}', authenticity_token, document.cookie)
             })
         `)
-    }
+    },
     releaseProduct(products){
         console.log('定时任务',this.task.taskName)
         // const mainT = require('../thread/render/main.win.js')
+        console.log('products',products)
         products = _.castArray(products)
         products = [products[0]]
         products.forEach(product => {
