@@ -52,12 +52,18 @@ export default {
       }
     }
   },
+  data(){
+      return {
+          // 当前ren
+          products:[]
+      }
+  },
   methods:{
     getTokenAndCookie(){
       // 
       const hasCookieAndToken = !!window.authenticity_token
       if(hasCookieAndToken){
-        this.releaseProduct(products)
+        this.releaseProduct()
         return
       }
       const loaded = 'LOADED'
@@ -70,6 +76,10 @@ export default {
             // 获取发布的商品明细列表
             ipcRenderer.send('get-product-list',this.task.id)
             ipcRenderer.once('ge-product-list-response',products => {
+
+
+
+                this.products = products
                 this.releaseProduct(products)
             })
             // const prods = await product.getDetails(undefined, id)
@@ -85,11 +95,11 @@ export default {
             })
         `)
     },
-    releaseProduct(products){
+    releaseProduct(){
         console.log('定时任务',this.task.taskName)
         // const mainT = require('../thread/render/main.win.js')
-        console.log('products',products)
-        products = _.castArray(products)
+        console.log('products',this.products)
+        products = _.castArray(this.products)
         products = [products[0]]
         products.forEach(product => {
                 product.item.name = 'refreshd:' + product.item.name
