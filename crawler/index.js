@@ -1,6 +1,7 @@
 const electron = require('electron')
 const { app, dialog, BrowserWindow, ipcMain } = electron
 const store = new(require('electron-store'))
+require('../store/index')
     // const Event = require('../thread/event-bus.js')
 const { cookiesKey } = require('./const')
 const recoveyCookies = require('./auth/recovey-cookies')
@@ -13,7 +14,7 @@ const product = require('./product/index')
 const MainWindow = require('../thread/main/main.win')
 const BackendWindow = require('../thread/main/back.win')
 console.log('-----', app.getPath('userData'))
-require('../store/index')
+
 
 // electron.remote.event = Event
 
@@ -133,7 +134,8 @@ ipcMain.on('get-product-list', async(event, id) => {
     // const tasks = store.get('task', [])
     // const task = tasks.find(task => task.id === id)
     const prods = await product.getDetails(undefined, id)
-    event.reply('get-task', prods)
+    console.log('???prods', prods)
+    event.reply('ge-product-list-response', prods)
 })
 
 

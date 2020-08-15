@@ -1,12 +1,15 @@
 // 作为额外的脚本注入到子窗口中
 // 窗口中的每次页面重载，跳转等，都会重新执行本脚本
-const remote = window.electron.remote
+const remote = require('electron').remote
 const store = remote.getGlobal('store')
 store.event.add('back', remote.getCurrentWindow())
-
+console.log('back-store', store)
 const releaseUrl = 'https://fril.jp/item/new'
-
+console.log('绑定 release-product事件')
 store.event.on('release-product', 'back', () => {
+    if (location.href === releaseUrl) {
+        return getCookieAndAuthenticityToken()
+    }
     // 跳转到新商品发布页，获取csx-token和cookie
     location.href = releaseUrl
 })
@@ -41,14 +44,12 @@ function getCookieAndAuthenticityToken() {
     console.log('authenticity_token', authenticity_token)
     store.authenticity_token = authenticity_token
     store.cookie = document.cookie
-    store.dispatch('release-product-ready', 'main', store)
+        //store.event.dispatch('release-product-ready', 'main', store)
 }
-
-
 
 window.addEventListener('load', () => {
     if (location.href === releaseUrl) {
-        getCookieAndAuthenticityToken
+        getCookieAndAuthenticityToken()
     } else {
         checkLogined()
         getShowUrl()

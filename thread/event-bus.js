@@ -3,7 +3,6 @@
 
 //import _ from 'lodash'
 const _ = require('lodash')
-
 class EventBus {
     wins = {}
     constructor() {
@@ -20,8 +19,8 @@ class EventBus {
         delete realWin.event[eventName]
     }
     once(eventName, winName, handle) {
-            function wrapHandle() {
-                handle()
+            function wrapHandle(...data) {
+                handle(...data)
                 this.off(eventName, winName, wrapHandle)
             }
             this.on(eventName, winName, wrapHandle)
@@ -30,13 +29,15 @@ class EventBus {
          * 给指定的窗口绑定事件，如果winName为空，则尝试给当前窗口绑定事件
          */
     on(eventName, winName, handle) {
-            let realHandle, realWin
-            if (_.isUnfined(handle)) {
+            let realWin
+            if (_.isUndefined(handle)) {
                 realWin = window.electron.remote.getCurrentWindow()
                 handle = winName
             } else {
                 realWin = this.wins[winName]
+                console.log('realWin', realWin, eventName)
             }
+            console.log('??????')
             realWin.$listeners = {
                 ...realWin.$listeners,
                 [eventName]: handle
@@ -46,27 +47,31 @@ class EventBus {
          * 触发一个指定窗口的指定事件
          */
     dispatch(eventName, winName, ...data) {
+        console.log('dispatch')
         let realData, realWinName
-        if (_.isUnfined(data)) {
+        if (_.isUndefined(data)) {
             realData = winName
         } else {
             realWinName = winName
             realData = data
         }
-        if (realWinName) {
-            const win = this.win[realWinName]
-            if (win) {
+        if (!realWinName) {
+            //如果没有指定触发的窗口，则在所有窗口触发
+            Object.keys(this.wins).forEach(key => {
+                const win = this.wins[key]
                 const handle = win.$listeners[eventName]
-                return new Promise((resolve, reject) => {
-                    handle && handle(...data, resolve)
-                })
-            } else {
-                console.warn(`事件${eventName}触发失败：指定的窗口不存在`)
-            }
-        } else {
-            console.error('触发事件失败：必须指定一个窗口名称')
+                handle && handle(...data)
+            })
+            return
         }
-        return Promise.reject()
+        // console.log('realWinName', realWinName)
+        const win = this.wins[realWinName]
+        if (win) {
+            const handle = win.$listeners[eventName]
+            handle && handle(...data)
+        } else {
+            console.warn(`事件${eventName}触发失败：指定的窗口不存在`)
+        }
     }
 }
 

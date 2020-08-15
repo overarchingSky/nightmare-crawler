@@ -1,4 +1,5 @@
 const { BrowserWindow } = require('electron')
+const path = require('path')
 class BackendWindow {
     win
     loginUrl = 'https://fril.jp/users/sign_in'
@@ -7,7 +8,7 @@ class BackendWindow {
             width: 1000,
             height: 600,
             webPreferences: {
-                preload: '../../thread/render/back.inject.js', //path.resolve(__dirname, './utils.js'),
+                preload: path.resolve(__dirname, '../render/back.inject.js'), //path.resolve(__dirname, './utils.js'),
                 nodeIntegration: true
             }
         })

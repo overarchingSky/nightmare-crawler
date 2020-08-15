@@ -30,10 +30,12 @@ export default {
     'task.enable'(val){
       if(val){
         //开启任务
+        this.getProducts().then(() => {
+            if(this.task.immedation){
+              this.releaseProduct()
+            }
+        })
         console.log('开启任务',this.task.name)
-        if(this.task.immedation){
-            this.getTokenAndCookie()
-        }
         let interval
         switch(this.task.type){
           case taskType['弹性间隔']:
@@ -55,61 +57,25 @@ export default {
   data(){
       return {
           // 当前任务所控制的商品列表（发布，或者停止发布）
-          products:[]
+          products:null
       }
   },
   methods:{
-    getTokenAndCookie(){
-      // 
-      const hasCookieAndToken = !!window.authenticity_token
-      if(hasCookieAndToken){
-        this.releaseProduct()
-        return
-      }
-      const loaded = 'LOADED'
-      console.log('event +++',store.event)
-      const backWin = store.event.wins['back']
-
-      //获取authenticity_token和cookie原理
-      //创建主子两个窗口，在子窗口中，进行访问目标页面，并进行登陆
-      //然后通过注入子窗口脚本，在脚本内获取了目标页面的authenticity_token和cookie，然后通过事件总线将其抛出，通知所有订阅者（这里订阅者为主窗口）
-
-      //订阅：主窗口监听名为loaded变量的值的事件，从而获取到需要的authenticity_token和cookie
-      mainWin.once(loaded, async(token, cookie) => {
-            // const tasks = store.get('task', [])
-            // const task = tasks.find(task => task.id === id)
-            document.cookie = cookie
-            window.authenticity_token = token
-            // 获取发布的商品明细列表
-            ipcRenderer.send('get-product-list',this.task.id)
-            ipcRenderer.once('ge-product-list-response',products => {
-                this.products = products
-                this.releaseProduct(products)
-            })
-            // const prods = await product.getDetails(undefined, id)
-            // product.release(prods)
-      })
-      // step - 1
-      // 在子窗口中注入脚本，用来获取authenticity_token和cookie
-      // 获取成功后，通过事件总线，抛出名为loaded变量的值的事件
-    //   backWin.webContents.executeJavaScript(`
-    //         const event = require('../event-bus.js')
-    //         const { remote } = require('electron')
-    //         window.addEventListener('load',() => {
-    //             //获取authenticity_token
-    //             let meta = document.querySelector('meta[name="csrf-token"]')
-    //             console.log('meta',meta)
-    //             let authenticity_token = meta && meta.content
-    //             console.log('authenticity_token',authenticity_token)
-    //             const store = remote.getGlobal('store')
-    //             store.authenticity_token = authenticity_token
-    //             store.cookie = document.cookie
-                
-    //         })
-    //     `)
-        //event.wins['main'].dispatch('${loaded}', authenticity_token, document.cookie)
+    getProducts(){
+        return new Promise((resolve,reject) => {
+            //获取发布的商品明细列表
+            if(!this.products || !Array.isArray(this.products)){
+                ipcRenderer.send('get-product-list',this.task.id)
+                ipcRenderer.on('ge-product-list-response',(e,products) => {
+                    console.log('获取到商品信息',products)
+                    this.products = products
+                    resolve(this.products)
+                })
+            }
+        })
+        
     },
-    releaseProduct(){
+    releaseProduct(){        
         console.log('定时任务',this.task.taskName)
         console.log('products',this.products)
         let products = _.castArray(this.products)
@@ -136,7 +102,7 @@ export default {
                         method: 'post',
                         data: f,
                         headers: {
-                            cookies: document.cookie,
+                            cookies: store.cookie,
                             'Content-Type': 'application/x-www-form-urlencoded',
                             'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
                             'x-requested-with': 'XMLHttpRequest'

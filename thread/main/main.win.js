@@ -1,4 +1,5 @@
 const { BrowserWindow } = require('electron')
+const path = require('path')
 class MainWindow {
     win
     constructor() {
@@ -7,7 +8,7 @@ class MainWindow {
             width: 1000,
             height: 600,
             webPreferences: {
-                preload: '.../../../thread/render/main.inject.js',
+                preload: path.resolve(__dirname, '../render/main.inject.js'),
                 nodeIntegration: true
             }
         })

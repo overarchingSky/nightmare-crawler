@@ -22,6 +22,7 @@ yarn lint
 
 ### developmen
 ```
+cnpm i
 npm run serve
 npm run start
 ```
