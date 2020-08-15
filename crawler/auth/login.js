@@ -6,10 +6,11 @@ let cookies = store.get(cookiesKey) || [];
 const isEffect = cookies.length > 0
 let isCookiesChanged = false;
 console.log(store.path)
-if (!isEffect) {
-    // to login
-    startLogin()
-}
+    // if (!isEffect) {
+    //     // to login
+    //     startLogin()
+    // }
+startLogin()
 
 function startLogin() {
     let timer
@@ -30,58 +31,9 @@ function startLogin() {
         //win.loadURL('https://www.zhihu.com/people/dou-jiao-87-20')
         // 打开开发者工具
     win.webContents.openDevTools()
-        // cookies.on('changed', handleCookieChange)
 
-    function handleCookieChange(...e) {
-        // win.webContents.session.cookies.get({})
-        //     .then((cookies) => {
-        //         store.set(cookiesKey, cookies);
-        //     })
-        //     .catch((error) => {
-        //         console.log({ error })
-        //     })
-        //     .finally(() => {
-        //         isCookiesChanged = false;
-        //     })
-        // return
-        //检测cookies变动事件，标记cookies发生变化
-        isCookiesChanged = true;
-
-        //每隔500毫秒检查是否有cookie变动，有变动则进行持久化
-        timer = setInterval(() => {
-            if (!win || !win.webContents) {
-                clearInterval(timer)
-                return
-            }
-            if (!isCookiesChanged) {
-                return;
-            }
-
-            console.log('timer', timer)
-            win.webContents.session.cookies.get({})
-                .then((cookies) => {
-                    store.set(cookiesKey, cookies);
-                })
-                .catch((error) => {
-                    console.log({ error })
-                })
-                .finally(() => {
-                    isCookiesChanged = false;
-                })
-        }, 500);
-    }
-    // win.on("page-title-updated", () => {
-    //     // 检查是否登陆
-    //     //cookies.removeListener('changed', handleCookieChange)
-    //     win.webContents.executeJavaScript(`
-    //         window.ipcRenderer.send('login-success')
-    //     `)
-    // })
     ipcMain.on('login-success', () => {
-
-        setTimeout(() => {
-            //win.destroy()
-        }, 0);
+        //登陆成功
     })
 }
 

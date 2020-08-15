@@ -1,44 +1,31 @@
 const electron = require('electron')
 const { app, dialog, BrowserWindow, ipcMain } = electron
 const store = new(require('electron-store'))
-    // const Event = requrie('../thread/event-bus.js')
+    // const Event = require('../thread/event-bus.js')
 const { cookiesKey } = require('./const')
 const recoveyCookies = require('./auth/recovey-cookies')
 const getProd = require('./task/get-prod')
 const path = require('path')
 const child_process = require('child_process');
 const fs = require('fs')
-    // const mainT = require('../thread/render/main.win.js')
 require('./menu')
 const product = require('./product/index')
+const MainWindow = require('../thread/main/main.win')
+const BackendWindow = require('../thread/main/back.win')
 console.log('-----', app.getPath('userData'))
+require('../store/index')
 
-// electron.event = Event
+// electron.remote.event = Event
+
 
 //应用程序主界面
 let win
 
 function createWindow() {
     // 引入登陆模块，如果未登录，将会打开新窗口并访问登陆页
-    const cookies = require('./auth/login')
-
-    // 创建浏览器窗口
-    win = new BrowserWindow({
-            width: 1000,
-            height: 600,
-            webPreferences: {
-                nodeIntegration: true
-            }
-        })
-        // 恢复cookies现场
-    recoveyCookies(win, cookies)
-
-    // 加载应用程序主页
-    console.log('env', process.env.NODE_ENV)
-    process.env.NODE_ENV === 'production' ? win.loadFile(path.resolve(__dirname, '../dist/index.html')) : win.loadURL('http://localhost:8991')
-
-    // 打开开发者工具
-    win.webContents.openDevTools()
+    // const cookies = require('./auth/login')
+    new BackendWindow()
+    new MainWindow()
 }
 
 // Electron会在初始化完成并且准备好创建浏览器窗口时调用这个方法

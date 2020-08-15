@@ -1,7 +1,8 @@
-//const { ipcRenderer, remote } = require('electron')
-const { ipcRenderer, remote } = window.electron
+// const { ipcRenderer, remote } = require('electron')
+// const { ipcRenderer, remote } = window.electron
 
-import _ from 'lodash'
+//import _ from 'lodash'
+const _ = require('lodash')
 
 class EventBus {
     wins = {}
@@ -31,7 +32,7 @@ class EventBus {
     on(eventName, winName, handle) {
             let realHandle, realWin
             if (_.isUnfined(handle)) {
-                realWin = remote.getCurrentWindow()
+                realWin = window.electron.remote.getCurrentWindow()
                 handle = winName
             } else {
                 realWin = this.wins[winName]
@@ -69,4 +70,5 @@ class EventBus {
     }
 }
 
-export const Event = new EventBus()
+const Event = new EventBus()
+module.exports = Event
