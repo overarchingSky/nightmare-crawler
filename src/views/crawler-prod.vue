@@ -65,12 +65,6 @@ export default {
   created(){
     ipcRenderer.on('revice-prod',this.fullData)
     ipcRenderer.on('revice-prod-end',this.endLoad)
-
-    let f = new FormData()
-    f.append('a',[1,2,3])
-    f.append('b',{name:'tl',age:28})
-    f = {a:[1,2,3],b:{name:'tl'}}
-    axios.post('https://fril.jp/item/validate',f,{'x-requested-with':'XMLHttpRequest','content-type':'application/x-www-form-urlencoded; charset=UTF-8'})
   }
 }
 </script>

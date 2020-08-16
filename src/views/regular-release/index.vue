@@ -57,33 +57,12 @@ export default {
   },
   methods:{
     getTokenAndCookie(){
-      // const hasCookieAndToken = !!store.authenticity_token
-      // if(hasCookieAndToken){
-      //     console.log('直接发布')
-      //   this.releaseProduct()
-      //   return
-      // }
-      // const backWin = store.event.wins['back']
-
       //获取authenticity_token和cookie原理
       //创建主子两个窗口，在子窗口中，进行访问目标页面，并进行登陆
       //然后通过注入子窗口脚本，在脚本内获取了目标页面的authenticity_token和cookie，然后通过事件总线将其抛出，通知所有订阅者（这里订阅者为主窗口）
       // 通知子窗口准备进行商品发布
-      store.event.dispatch('release-product','back')
-      //订阅：主窗口监release-product-ready事件，从而获取到需要的authenticity_token和cookie
-      //子窗口准备完毕后，会触发release-product-ready事件
-      // store.event.on('release-product-ready', 'main',store => {
-      //       // const tasks = store.get('task', [])
-      //       // const task = tasks.find(task => task.id === id)
-      //       console.log('release-product-ready ++++',store)
-      //       // 获取发布的商品明细列表
-      //       ipcRenderer.send('get-product-list',this.task.id)
-      //       ipcRenderer.on('ge-product-list-response',products => {
-      //           this.products = products
-      //           console.log('间接发布')
-      //           this.releaseProduct()
-      //       })
-      // })
+      store.event.dispatch('to-release-page','back')
+
     },
     openPanel(){
       this.showCreateTaskPanel = true

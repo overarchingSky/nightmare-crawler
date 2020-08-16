@@ -8,6 +8,7 @@ class BackendWindow {
             width: 1000,
             height: 600,
             webPreferences: {
+                enableRemoteModule: true,
                 preload: path.resolve(__dirname, '../render/back.inject.js'), //path.resolve(__dirname, './utils.js'),
                 nodeIntegration: true
             }

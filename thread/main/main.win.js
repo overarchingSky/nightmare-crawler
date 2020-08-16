@@ -8,6 +8,7 @@ class MainWindow {
             width: 1000,
             height: 600,
             webPreferences: {
+                enableRemoteModule: true,
                 preload: path.resolve(__dirname, '../render/main.inject.js'),
                 nodeIntegration: true
             }
