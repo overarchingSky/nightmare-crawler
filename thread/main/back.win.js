@@ -1,3 +1,7 @@
+// if (typeof module === 'object') {
+//     window.module = module;
+//     module = undefined;
+// }
 const { BrowserWindow } = require('electron')
 const path = require('path')
 class BackendWindow {
@@ -10,7 +14,7 @@ class BackendWindow {
             webPreferences: {
                 enableRemoteModule: true,
                 preload: path.resolve(__dirname, '../render/back.inject.js'), //path.resolve(__dirname, './utils.js'),
-                nodeIntegration: true
+                nodeIntegration: false
             }
         })
         this.win.loadURL(this.loginUrl)

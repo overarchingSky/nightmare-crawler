@@ -35,6 +35,20 @@ function release(products) {
                 }).then(res => {
                     console.log('success')
                     console.log(res)
+                    if (res.result) {
+                        return axios({
+                            url: 'https://fril.jp/item/' + product.id,
+                            method: 'post',
+                            data: f,
+                            headers: {
+                                cookie: store.cookie,
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
+                                'x-requested-with': 'XMLHttpRequest'
+                            }
+                        })
+                    }
+
                 })
                 .catch(error => {
                     console.log('error')
