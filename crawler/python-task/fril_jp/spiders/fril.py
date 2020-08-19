@@ -118,6 +118,10 @@ class FrilSpider(scrapy.Spider):
         detailStr = formSelector.xpath('./div[last()]/@data-react-props').get()
         #print(detailStr)
         formData = {} #FrilJpItem()
+        imgs = formSelector.xpath('.//div[@class="file-content item-image-col"]/img[@class="original-img"]/@src').getall()
+        # imgs = formSelector.xpath('.//div[@class="file-content item-image-col"]')
+        print('imgs')
+        print(imgs)
         inputs = formSelector.xpath('.//input[@type="hidden"]')
         for inputSelector in inputs:
             key = inputSelector.xpath('@name').get()
@@ -148,7 +152,7 @@ class FrilSpider(scrapy.Spider):
             #         print(formData)
             # else:
             #     formData[field] = str(value) if not value is None else ''
-        FrilItem = FrilJpItem(utf8 = formData['utf8'], _method = formData['_method'],authenticity_token=formData['authenticity_token'],item_img_ids=formData['item_img_ids'],updates=formData['updates'],set_images=formData['set_images'],crop_x=formData['crop_x'],crop_y=formData['crop_y'],crop_size=formData['crop_size'])
+        FrilItem = FrilJpItem(utf8 = formData['utf8'], _method = formData['_method'],authenticity_token=formData['authenticity_token'],imgs=imgs,item_img_ids=formData['item_img_ids'],updates=formData['updates'],set_images=formData['set_images'],crop_x=formData['crop_x'],crop_y=formData['crop_y'],crop_size=formData['crop_size'])
         info =  json.loads(detailStr)['item']
         infoVm = InfoItem(user_id=info['user_id'],name = info['name'],detail = info['detail'],parent_category_id = info['parent_category_id'],category_id = info['category_id'],size_id = info['size_id'], brand_id = info['brand_id'],informal_brand_id = info['informal_brand_id'], status = info['status'],origin_price = info['origin_price'],sell_price = info['sell_price'],transaction_status = info['transaction_status'],carriage = info['carriage'],delivery_method = info['delivery_method'],delivery_date = info['delivery_date'],delivery_area = info['delivery_area'],open_flag = info['open_flag'],sold_out_flag = info['sold_out_flag'],related_size_group_ids = info['related_size_group_ids'],request_required = info['request_required'])
         

@@ -13,6 +13,7 @@ class FrilJpItem(scrapy.Item):
     utf8 = scrapy.Field()
     _method = scrapy.Field()
     authenticity_token = scrapy.Field()
+    imgs = scrapy.Field()
     item_img_ids = scrapy.Field()
     updates = scrapy.Field()
     set_images = scrapy.Field()

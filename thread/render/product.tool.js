@@ -8,10 +8,14 @@ const store = remote.getGlobal('store')
 function release(products) {
     products = _.castArray(products)
     console.log('products', products)
+        // 临时测试代码
+    products.length = 1
+        // 临时测试代码 end
     products.forEach(product => {
         product.item.name = 'tl:' + product.item.name.slice(5)
         const data = qs.stringify(product, { arrayFormat: 'brackets', encode: false }).split('&').map(item => item.split('='))
             //data = qs.stringify(product, { arrayFormat: 'brackets' })
+        console.log('product', product)
         const f = new FormData()
         data.forEach(([key, val]) => {
             if (key === 'authenticity_token') {
@@ -32,14 +36,13 @@ function release(products) {
                         'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
                         'x-requested-with': 'XMLHttpRequest'
                     }
-                }).then(res => {
+                }).then(({ data }) => {
                     console.log('success')
-                    console.log(res)
-                    if (res.result) {
+                    console.log(data)
+                    if (data.result) {
                         return axios({
-                            url: 'https://fril.jp/item/' + product.id,
-                            method: 'post',
-                            data: f,
+                            url: 'https://fril.jp/ajax/selling_fee?amount=' + product.item.sell_price,
+                            method: 'get',
                             headers: {
                                 cookie: store.cookie,
                                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -47,8 +50,24 @@ function release(products) {
                                 'x-requested-with': 'XMLHttpRequest'
                             }
                         })
-                    }
 
+                    }
+                    return Promise.reject({ message: 'validate fail' })
+
+                }).then(res => {
+                    // 285555 => 109923
+                    //res {selling_fee:109923}
+                    return axios({
+                        url: 'https://fril.jp/item',
+                        method: 'post',
+                        //data: {},
+                        headers: {
+                            cookie: store.cookie,
+                            'Content-Type': 'multipart/form-data',
+                            'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
+                            'x-requested-with': 'XMLHttpRequest'
+                        }
+                    })
                 })
                 .catch(error => {
                     console.log('error')
