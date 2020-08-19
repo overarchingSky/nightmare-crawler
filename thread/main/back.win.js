@@ -12,6 +12,9 @@ class BackendWindow {
             width: 1000,
             height: 600,
             webPreferences: {
+                // 关闭安全策略，允许跨域请求
+                webSecurity: false,
+                allowRunningInsecureContent: true,
                 enableRemoteModule: true,
                 preload: path.resolve(__dirname, '../render/back.inject.js'), //path.resolve(__dirname, './utils.js'),
                 nodeIntegration: false

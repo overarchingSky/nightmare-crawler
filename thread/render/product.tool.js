@@ -3,7 +3,7 @@ const _ = require('lodash')
 const qs = require('qs')
 const axios = require('axios')
 const store = remote.getGlobal('store')
-    //var FormData = require('form-data');
+    //var FormData = require('form-data');  
 
 function release(products) {
     products = _.castArray(products)
@@ -57,16 +57,44 @@ function release(products) {
                 }).then(res => {
                     // 285555 => 109923
                     //res {selling_fee:109923}
-                    return axios({
-                        url: 'https://fril.jp/item',
-                        method: 'post',
-                        //data: {},
-                        headers: {
-                            cookie: store.cookie,
-                            'Content-Type': 'multipart/form-data',
-                            'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
-                            'x-requested-with': 'XMLHttpRequest'
-                        }
+                    Promise.all(product.imgs.map(imgUrl => {
+                        return axios({
+                            url: imgUrl,
+                            method: 'get',
+                            headers: {
+                                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.122 Electron/9.2.0 Safari/537.36',
+                                // 'Sec-Fetch-Dest': 'document',
+                                // 'Sec-Fetch-Mode': 'navigate',
+                                // 'Sec-Fetch-Site': 'none',
+                                // 'Sec-Fetch-User': '?1',
+                                // 'Upgrade-Insecure-Requests': 1
+
+                            },
+                            responseType: 'blob'
+                        })
+                    })).then(imgBlobs => {
+                        return imgBlobs.map((imgBlob, index) => {
+                            const partals = product.imgs[index].split('/')
+                            const fileName = partals[partals.length - 1].split('?')[0]
+                            return { imgBlobs, fileName }
+                        })
+                    }).then(data => {
+                        f = new FormData()
+                        data.forEach(item => {
+                            const file = new File(item.fileName, item.imgBlobs)
+                            f.append('img', file)
+                        })
+                        return axios({
+                            url: 'https://fril.jp/item',
+                            method: 'post',
+                            data: f,
+                            headers: {
+                                cookie: store.cookie,
+                                'Content-Type': 'multipart/form-data',
+                                'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36',
+                                'x-requested-with': 'XMLHttpRequest'
+                            }
+                        })
                     })
                 })
                 .catch(error => {
