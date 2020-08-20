@@ -107,12 +107,14 @@ class FrilSpider(scrapy.Spider):
             prodSelector = Selector(text=prodSelector)
             arr = prodSelector.xpath(".//a/@href").get().strip().replace('\\"','').split('/')
             # detailUrl = 'https://item.fril.jp/' + arr[-1]
-            detailUrl = 'https://fril.jp/item/' + arr[-1] + '/edit'
+            id = arr[-1]
+            detailUrl = 'https://fril.jp/item/' + id + '/edit'
             print('detailUrl')
             print(detailUrl)
-            yield Request(detailUrl, callback=self.parseDetail,headers=self.headers)
+            yield Request(detailUrl, meta={'id':id}, callback=self.parseDetail,headers=self.headers)
 
     def parseDetail(self, response):
+        id = response.meta['id']
         #response.xpath('//')
         formSelector = response.xpath('.//form[@id="item-form"]')
         detailStr = formSelector.xpath('./div[last()]/@data-react-props').get()
@@ -122,6 +124,9 @@ class FrilSpider(scrapy.Spider):
         # imgs = formSelector.xpath('.//div[@class="file-content item-image-col"]')
         print('imgs')
         print(imgs)
+        for i in range(len(imgs)):
+            imgs[i] = 'https:' + imgs[i]
+
         inputs = formSelector.xpath('.//input[@type="hidden"]')
         for inputSelector in inputs:
             key = inputSelector.xpath('@name').get()
@@ -152,7 +157,7 @@ class FrilSpider(scrapy.Spider):
             #         print(formData)
             # else:
             #     formData[field] = str(value) if not value is None else ''
-        FrilItem = FrilJpItem(utf8 = formData['utf8'], _method = formData['_method'],authenticity_token=formData['authenticity_token'],imgs=imgs,item_img_ids=formData['item_img_ids'],updates=formData['updates'],set_images=formData['set_images'],crop_x=formData['crop_x'],crop_y=formData['crop_y'],crop_size=formData['crop_size'])
+        FrilItem = FrilJpItem(id=id,utf8 = formData['utf8'], _method = formData['_method'],authenticity_token=formData['authenticity_token'],imgs=imgs,item_img_ids=formData['item_img_ids'],updates=formData['updates'],set_images=formData['set_images'],crop_x=formData['crop_x'],crop_y=formData['crop_y'],crop_size=formData['crop_size'])
         info =  json.loads(detailStr)['item']
         infoVm = InfoItem(user_id=info['user_id'],name = info['name'],detail = info['detail'],parent_category_id = info['parent_category_id'],category_id = info['category_id'],size_id = info['size_id'], brand_id = info['brand_id'],informal_brand_id = info['informal_brand_id'], status = info['status'],origin_price = info['origin_price'],sell_price = info['sell_price'],transaction_status = info['transaction_status'],carriage = info['carriage'],delivery_method = info['delivery_method'],delivery_date = info['delivery_date'],delivery_area = info['delivery_area'],open_flag = info['open_flag'],sold_out_flag = info['sold_out_flag'],related_size_group_ids = info['related_size_group_ids'],request_required = info['request_required'])
         

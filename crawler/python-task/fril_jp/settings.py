@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 # Scrapy settings for fril_jp project
 #
 # For simplicity, this file contains only settings considered important or
@@ -69,6 +69,7 @@ ITEM_PIPELINES = {
    # 多个pipelines执行的优先级
    'fril_jp.pipelines.FrilJpPipeline': 300,
    #'fril_jp.pipelines.CSVFrilJpPipeline': 299
+   'fril_jp.pipelines.DownImagePipeline':301
 }
 
 # CSV_DELIMITER = ","
@@ -83,6 +84,10 @@ FIELDS_TO_EXPORT = [
     'img',                                                              
     'desc'                                                   
 ] 
+
+IMAGES_URLS_FIELD = 'imgs'
+project_dir=os.path.abspath(os.path.dirname(__file__))
+IMAGES_STORE = os.path.join(project_dir,'../data-sheet/images')
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

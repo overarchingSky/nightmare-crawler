@@ -10,6 +10,8 @@
 from scrapy.exporters import JsonItemExporter,JsonLinesItemExporter,CsvItemExporter
 # 使用自定义的csvItemExporter，其内部定义了csv表头的顺序和显示内容
 from fril_jp.spiders.csv_item_exporter import MyProjectCsvItemExporter
+from scrapy.pipelines.images import ImagesPipeline
+from scrapy import Request
 
 # 导出为csv文件
 class CSVFrilJpPipeline:
@@ -50,6 +52,19 @@ class FrilJpPipeline:
     def close_spider(self,spider):
         self.exporter.finish_exporting()
         self.fp.close()
+
+class DownImagePipeline(ImagesPipeline):
+    def get_media_requests(self, item, info):
+        for image_url in item['imgs']:
+            yield Request(image_url, meta={'item': item, 'index': item['imgs'].index(image_url)})
+
+    def file_path(self, request, response=None, info=None):
+        item = request.meta['item']  # 通过上面的meta传递过来item
+        index = request.meta['index']
+        ext = request.url.split('/')[-1].split('.')[-1].split('?')[0]
+        # down_file_name = u'full/{0}/img.{1}.{2}'.format(item['item']['name'],index, ext)
+        down_file_name = u'full/{0}/img.{1}.{2}'.format(item['id'],index, ext)
+        return down_file_name
 
 
 # 文件追加写入

@@ -10,6 +10,7 @@ import scrapy
 
 class FrilJpItem(scrapy.Item):
     # define the fields for your item here like:
+    id = scrapy.Field()
     utf8 = scrapy.Field()
     _method = scrapy.Field()
     authenticity_token = scrapy.Field()
