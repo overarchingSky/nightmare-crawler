@@ -3,6 +3,8 @@ const _ = require('lodash')
 const qs = require('qs')
 const axios = require('axios')
 const store = remote.getGlobal('store')
+const AppPath = remote.app.getAppPath().replace(/\\/g,'/')
+console.log('AppPath',AppPath)
     //var FormData = require('form-data');  
 
 function release(products) {
@@ -22,6 +24,7 @@ function release(products) {
                 console.log('++++----authenticity_token')
                 val = store.authenticity_token
             }
+            if(key === 'id') return
             f.append(key, val)
         })
         console.log('this', this)
@@ -57,22 +60,40 @@ function release(products) {
                 }).then(res => {
                     // 285555 => 109923
                     //res {selling_fee:109923}
-                    Promise.all(product.imgs.map(imgUrl => {
-                        return axios({
-                            url: imgUrl,
-                            method: 'get',
-                            headers: {
-                                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.122 Electron/9.2.0 Safari/537.36',
-                                // 'Sec-Fetch-Dest': 'document',
-                                // 'Sec-Fetch-Mode': 'navigate',
-                                // 'Sec-Fetch-Site': 'none',
-                                // 'Sec-Fetch-User': '?1',
-                                // 'Upgrade-Insecure-Requests': 1
-
-                            },
-                            responseType: 'blob'
+                    Promise.all(product.imgs.map((imgUrl,index) => {
+                        // const filePath = 'file:///' + AppPath  + '/python-task/data-sheet/images/full/' + product.id + `/img.${index}.jpg`
+                        // console.log('filePath',filePath)
+                        return new Promise((resolve,reject) => {
+                            const request = remote.net.request(imgUrl)
+                            request.on('response',response => {
+                                response.on('data', (chunk) => {
+                                    console.log(`BODY: ${chunk}`)
+                                  })
+                                  response.on('end', res => {
+                                    resolve(res)
+                                    console.log('No more data in response.')
+                                  })
+                            })
+                            request.end()
                         })
+                        
+
+                        // return axios({
+                        //     url:imgUrl,//filePath,
+                        //     method: 'get',
+                        //     headers: {
+                        //         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.122 Electron/9.2.0 Safari/537.36',
+                        //         // 'Sec-Fetch-Dest': 'document',
+                        //         // 'Sec-Fetch-Mode': 'navigate',
+                        //         // 'Sec-Fetch-Site': 'none',
+                        //         // 'Sec-Fetch-User': '?1',
+                        //         // 'Upgrade-Insecure-Requests': 1
+
+                        //     },
+                        //     responseType: 'blob'
+                        // })
                     })).then(imgBlobs => {
+                        console.log('imgBlobs',imgBlobs)
                         return imgBlobs.map((imgBlob, index) => {
                             const partals = product.imgs[index].split('/')
                             const fileName = partals[partals.length - 1].split('?')[0]

@@ -6,15 +6,15 @@ const { BrowserWindow } = require('electron')
 const path = require('path')
 class BackendWindow {
     win
-    loginUrl = 'https://fril.jp/users/sign_in'
+    loginUrl = 'https://fril.jp'//'https://fril.jp/users/sign_in'
     constructor() {
         this.win = new BrowserWindow({
             width: 1000,
             height: 600,
             webPreferences: {
-                // 关闭安全策略，允许跨域请求
-                webSecurity: false,
-                allowRunningInsecureContent: true,
+                webSecurity:false,
+                allowDisplayingInsecureContent:true,
+                allowRunningInsecureContent:true,
                 enableRemoteModule: true,
                 preload: path.resolve(__dirname, '../render/back.inject.js'), //path.resolve(__dirname, './utils.js'),
                 nodeIntegration: false
