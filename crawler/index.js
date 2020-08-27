@@ -1,3 +1,14 @@
+// var http = require('http');
+// var https = require('http');
+// var ElectronProxyAgent = require('electron-proxy-agent');
+// // var session = require('session').defaultSession;
+ 
+// // use ElectronProxyAgent as http and https globalAgents
+// http.globalAgent = https.globalAgent = new ElectronProxyAgent({
+//     resolveProxy : function(url, callback) {
+//       callback("PROXY 127.0.0.1:8001; DIRECT"); // return a valid pac syntax
+//     }
+//   });
 const electron = require('electron')
 const { app, dialog, BrowserWindow, ipcMain } = electron
 const store = new(require('electron-store'))
@@ -14,6 +25,8 @@ const product = require('../thread/main/product.tool')
 const MainWindow = require('../thread/main/main.win')
 const BackendWindow = require('../thread/main/back.win')
 console.log('-----', app.getPath('userData'))
+
+
 
 
 // electron.remote.event = Event

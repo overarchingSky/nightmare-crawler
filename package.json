@@ -71,6 +71,7 @@
     "cross-env": "^7.0.2",
     "electron": "^9.0.4",
     "electron-builder": "^22.7.0",
+    "electron-proxy-agent": "^1.2.0",
     "electron-store": "^5.2.0",
     "eslint": "^6.7.2",
     "eslint-plugin-import": "^2.20.2",
@@ -80,6 +81,8 @@
     "eslint-plugin-vue": "^6.2.2",
     "formdata-node": "^2.2.2",
     "hosted-git-info": "^3.0.4",
+    "http-proxy-agent": "^4.0.1",
+    "https-proxy-agent": "^5.0.0",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11"
