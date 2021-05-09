@@ -77,7 +77,7 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.2.2",
     "formdata-node": "^2.2.2",
-    "hosted-git-info": "^3.0.4",
+    "hosted-git-info": "^2.8.9",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11"
